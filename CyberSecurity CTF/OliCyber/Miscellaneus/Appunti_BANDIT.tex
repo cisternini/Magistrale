@@ -1,0 +1,161 @@
+\documentclass{article}
+\usepackage{hyperref}
+\hypersetup{
+    bookmarksopen = true;
+}
+
+\title{CTF_Notes}
+
+\begin{document}
+\tableofcontents
+
+
+
+\section{Commands Ubuntu}
+    \subsection{Connection servers}
+                \subsubsection{SSH}
+                    \paragraph{Structure}
+                    \textbf{ssh arguments}: Create an openSSH connection
+                        \paragraph{Arguments}
+                            \begin{itemize}
+                                \item name_user@name_host (can be also localhost) \textbf{example} bandit0@bandit.labs.overthewire.org
+                                \item  -p : used to indicate port's number \textbf{example} -p 2220 
+                                \item - i : to use private password of asymmetric connection (permission key: 400)
+                            \end{itemize}
+                \subsubsection{NC (NetCat)}
+                            Useful to menage net's connections, or also to send data to one specific port.
+                            \textbf{nc arguments} : ex. send password to 30000 port: \textbf{echo <password> | nc <ip_address> 30000 (port)}
+                            \paragraph{arguments}
+                            \begin{itemize}
+                                \item destination : ip address destination
+                                \item port: destination port
+                            \end{itemize}
+                \subsubsection{OPENSSL}
+                    It is a toolkit that has many functions, these permit, for example, to create secure connections. \\
+                    \textbf{openssl commands option parameters}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item s_clients: protocol
+                    \end{itemize}
+                    \paragraph{parameters}
+                    \begin{itemize}
+                        \item host: destination host
+                        \item port: destination port
+                    \end{itemize}
+                \subsubsection{NMAP}
+                    Useful tool that allowed to scan port and has also other functions\\
+                    \textbf{nmap arguments host}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -p : select a range of ports ex 1-200
+                        \item -sV: scan deeper range of port and find versione and service . 
+                    \end{itemize}
+
+    \subsection{Simple Commands}
+                \subsubsection{CAT}
+                    \paragraph{Strange name of file}
+                    \begin{itemize}
+                        \item  If name of a file is a particular symbol, and not a lettere or a number, like a dot or "-". You can read it by writing
+                        before the name "./"(it's for all commands). \textbf{example} namefile: -  -> "cat ./-" .
+                        \item If name of a file contain spaces, you can read it by writing namefile between  double quote. \textbf{example } namefile: nome con spazi -> cat "nome con spazi" . 
+                        \item if file is hidden you can read it anyway by writing "." befor the neme \textbf{example} hidden name file: .hidden -> cat .hidden
+            
+                    \end{itemize}
+                \subsubsection{FILE}
+                    Explain what type of file is it. \textbf{file NameFilesWithAlsoRegularEXP/ArgumentsAndNameFiles} \\
+                    \textit{example}
+                    \begin{itemize}
+                        \item file * : allow to show types of all file in the folder
+                        \item 
+                    \end{itemize} 
+                \subsubsection{FIND}
+                    Useful to search a file or a directory.\\
+                    \textbf{find path arguments} : es. find ./inhere -type f -size  1033c -not -executable -exec find {} +;q
+                    \paragraph{arguments}
+                    It can be divided in 2 group: TEST and ACTION, in the first group there are all filter that allowed to find right file. In the second group are listed all action that we can do after the filter are finished. 
+                    And there are also many operators, these permitted to try more combination of filter.   
+                    \subparagraph{TESTS}
+                    Tests that i have tried.
+                    \begin{itemize}
+                        \item type : f-> file, d->directory, b-> block (buffered) special \dots
+                        \item size : [+/-/nothing] number + unit -> c: Bytes, k:kibibytes, M:mebibytes, G:gibibytes and overthewire
+                        \item executable: select only file that are executable   
+                        \item group: filter to group user
+                        \item user: filter to user
+                    \end{itemize}
+                    \paragraph{operator}
+                    \begin{itemize}
+                        \item -not \ ! : it's used to negate a filter
+                    \end{itemize}
+                    \subparagraph{ACTION}
+                    Action that i have tried.
+                    \begin{itemize}
+                        \item exec: it permit to run other commands that will use output of find as input \textbf{es. } -exec file (if i want add arguments of this command i have to write before of curly braces){} +; "{}" will be substitued by output of commands, "+" is a terminator that allowed to append comamnd's results to "find"'s results. 
+                    \end{itemize}
+                \subsubsection{GREP}
+                    Useful to search text into file.
+                    \textbf{grep "word" file}
+                    \paragraph{arguments}
+                    \begin{itemize}
+        
+                        \item -w : used to search a specif word, select only lines containg mathces that form whole words. 
+                    \end{itemize}
+                \subsubsection{SORT}
+                    \textbf{sort file arguments}\\
+                    Used to sort a file text \textbf{es} sort data.txt | uniq -c
+                \subsubsection{UNIQ}
+                    \textbf{uniq file arguments}\\
+                    \paragraph{arguments}   
+                    \begin{itemize}
+                        \item -c: count number of lines that are equals, only if they are under each other
+                    \end{itemize}
+                \subsubsection{STRINGS}
+                    Command to extract strings by file data\\
+                    \textbf{strigns file}
+                \subsubsection{BASE64}
+                    Used to encode/decode a file
+                    \textbf{base64 arguments file}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : used to decode a file encoded with base64
+                    \end{itemize}
+                \subsubsection{TR}
+                    used to translate a string, for example to use Rot13 "tr 'A-Za-z' 'N-ZA-Mn-za-m'
+                 \subsubsection{GZIP}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{gzip arguments archivie}: archivie's name must finish with .gz to extract its.
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : to decompress file.
+                    \end{itemize}
+                \subsubsection{BZIP2}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{bzip2 arguments archivie}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : to decompress file.
+                    \end{itemize}
+                \subsubsection{TAR}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{tar arguments  -f archivie}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -x : to extract file.
+                    \end{itemize}
+                \subsubsection{XXD}
+                    To create or to revert an hexdump\\
+                    \textbf{xxd arguments file_source file_destination}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item r: hexdump -> original
+                    \end{itemize}
+                    
+                       
+
+
+
+
+
+
+
+\end{document}
