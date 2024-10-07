@@ -1,0 +1,364 @@
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{listings}
+
+\hypersetup{
+    bookmarksopen = true;
+}
+
+\title{CTF\_Notes}
+
+\begin{document}
+\tableofcontents
+
+
+
+\section{Commands Ubuntu}
+    \subsection{Bash}
+            The language bash is a script- language that allow to write any type of script. 
+            \paragraph{Structure}
+                \subparagraph{Variable}
+                    \begin{itemize}
+                        \item \textbf{declaretion}: name\_vabiable (without any sign before)
+                        \item \textbf{assegnament}: 
+                                \begin{itemize}
+                                    \item Value: name\_variable='Value'
+                                    \item command's result: name\_vabiable=\$(command)
+                                \end{itemize} 
+                    \end{itemize}
+                   
+                \subparagraph{iteration}
+                    \begin{itemize}
+                        \item for variable in \{\}; do .... done ( \{\} can be substituted by range  \{ left\_value..right\_value  \} or also set [value1 value2 ... valueN])
+                    \end{itemize}
+                \subparagraph{Condition}
+                    \begin{itemize}
+                        \item if [conditiod]: then .... fi
+                    \end{itemize}
+    \subsection{Connection servers}
+                \subsubsection{SSH}
+                    \paragraph{Structure}
+                    \textbf{ssh arguments}: Create an openSSH connection
+                        \paragraph{Arguments}
+                            \begin{itemize}
+                                \item name\_user@name\_host (can be also localhost) \textbf{example} bandit0@bandit.labs.overthewire.org
+                                \item -p: used to indicate port's number \textbf{example} -p 2220 
+                                \item -i : to use private password of asymmetric connection (permission key: 400)
+                                \item /bin/(shell name): allow to log in with another shell different by bash
+                            \end{itemize}
+                \subsubsection{NC (NetCat)}
+                            Useful to menage net's connections, or also to send data to one specific port.
+                            \textbf{nc arguments} : ex. send password to 30000 port: \textbf{echo <password> | nc <ip\_address> 30000 (port)}
+                            \paragraph{arguments}
+                            \begin{itemize}
+                                \item destination : ip address destination
+                                \item port: destination port
+                                \item -l : allow to create a server that attend a connection on a specific port
+                            \end{itemize}
+                \subsubsection{OPENSSL}
+                    It is a toolkit that has many functions, these permit, for example, to create secure connections. \\
+                    \textbf{openssl commands option parameters}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item s\_clients: protocol
+                    \end{itemize}
+                    \paragraph{parameters}
+                    \begin{itemize}
+                        \item host: destination host
+                        \item port: destination port
+                    \end{itemize}
+                \subsubsection{NMAP}
+                    Useful tool that allowed to scan port and has also other functions\\
+                    \textbf{nmap arguments host}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -p : select a range of ports ex 1-200
+                        \item -sV: scan deeper range of port and find versione and service . 
+                    \end{itemize}
+            \subsubsection{GIT}
+                    Allow to use git system. \textbf{git option path}
+                    \paragraph{Option}
+                        \subparagraph{clone}
+                            Allow to clone repository in local or in another repository or local directory
+                            \begin{itemize}
+                                \item ssh-path: ssh://username@hostname[:port]/path\_directories
+                            \end{itemize}
+                        \subparagraph{show}
+                            Show any details about some Git objects as blob, tree, tag e commit
+                        \subparagraph{log}
+                                Allow to see commit history into an git repository. \\
+                                \textbf{what we see}
+                                \begin{description}
+                                    \item \textbf{Secure Hash Algorithm} : unique commit ID 
+                                    \item \textbf{Author}: commit Author name
+                                    \item \textbf{date}: date and hour 
+                                    \item \textbf{Commit message}: Descriptive message about commit 
+                                \end{description}
+                        \subparagraph{checkout}
+                                Allow to switch from branch to other, restore a file in a worktree or overwrite paths with index or commit content. 
+                                \begin{description}
+                                    \item for restore add : SHA commit \textbf{es} git checkout [commit SHA] 
+                                    \item switch from branch : path branch \textbf{es} git checkout remotes/origin/dev
+                                \end{description}
+                        \subparagraph{branch}
+                                It Shows branches on repository
+                                \begin{itemize}
+                                    \item - a : show hidden branch
+                                \end{itemize}
+                        \subparagraph{tag}
+                                without option allows to show all tag, instead with option allows to add new tag 
+                        \subparagraph{add}
+                                allow to add new modify to next commit
+                        \subparagraph{commit}
+                                it executes commit and select what modify will be sent to remotes branch
+                        \subparagraph{push}
+                                it sent commit from local to remote branch
+                                    \begin{itemize}
+                                        \item source destination : \textbf{es} git push origin master
+                                    \end{itemize}    
+    \subsection{Simple Commands}
+                \subsubsection{CAT}
+                    \paragraph{Strange name of file}
+                    \begin{itemize}
+                        \item  If name of a file is a particular symbol, and not a lettere or a number, like a dot or "-". You can read it by writing
+                        before the name "./"(it's for all commands). \textbf{example} namefile: -  -> "cat ./-" .
+                        \item If name of a file contain spaces, you can read it by writing namefile between  double quote. \textbf{example } namefile: nome con spazi -> cat "nome con spazi" . 
+                        \item if file is hidden you can read it anyway by writing "." befor the neme \textbf{example} hidden name file: .hidden -> cat .hidden
+            
+                    \end{itemize}
+                \subsubsection{FILE}
+                    Explain what type of file is it. \textbf{file NameFilesWithAlsoRegularEXP/ArgumentsAndNameFiles} \\
+                    \textit{example}
+                    \begin{itemize}
+                        \item file * : allow to show types of all file in the folder
+                        \item 
+                    \end{itemize} 
+                \subsubsection{FIND}
+                    Useful to search a file or a directory.\\
+                    \textbf{find path arguments} : es. find ./inhere -type f -size  1033c -not -executable -exec find {} +;q
+                    \paragraph{arguments}
+                    It can be divided in 2 group: TEST and ACTION, in the first group there are all filter that allowed to find right file. In the second group are listed all action that we can do after the filter are finished. 
+                    And there are also many operators, these permitted to try more combination of filter.   
+                    \subparagraph{TESTS}
+                    Tests that i have tried.
+                    \begin{itemize}
+                        \item type : f-> file, d->directory, b-> block (buffered) special \dots
+                        \item size : [+/-/nothing] number + unit -> c: Bytes, k:kibibytes, M:mebibytes, G:gibibytes and overthewire
+                        \item executable: select only file that are executable   
+                        \item group: filter to group user
+                        \item user: filter to user
+                    \end{itemize}
+                    \paragraph{operator}
+                    \begin{itemize}
+                        \item -not \ ! : it's used to negate a filter
+                    \end{itemize}
+                    \subparagraph{ACTION}
+                    Action that i have tried.
+                    \begin{itemize}
+                        \item exec: it permit to run other commands that will use output of find as input \textbf{es. } -exec file (if i want add arguments of this command i have to write before of curly braces){} +; "{}" will be substitued by output of commands, "+" is a terminator that allowed to append comamnd's results to "find"'s results. 
+                    \end{itemize}
+                \subsubsection{GREP}
+                    Useful to search text into file.
+                    \textbf{grep "word" file}
+                    \paragraph{arguments}
+                    \begin{itemize}
+        
+                        \item -w : used to search a specif word, select only lines containg mathces that form whole words. 
+                    \end{itemize}
+                \subsubsection{SORT}
+                    \textbf{sort file arguments}\\
+                    Used to sort a file text \textbf{es} sort data.txt | uniq -c
+                \subsubsection{UNIQ}
+                    \textbf{uniq file arguments}\\
+                    \paragraph{arguments}   
+                    \begin{itemize}
+                        \item -c: count number of lines that are equals, only if they are under each other
+                    \end{itemize}
+                \subsubsection{STRINGS}
+                    Command to extract strings by file data\\
+                    \textbf{strigns file}
+                \subsubsection{BASE64}
+                    Used to encode/decode a file
+                    \textbf{base64 arguments file}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : used to decode a file encoded with base64
+                    \end{itemize}
+                \subsubsection{TR}
+                    used to translate a string, for example to use Rot13 "tr 'A-Za-z' 'N-ZA-Mn-za-m'
+                 \subsubsection{GZIP}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{gzip arguments archivie}: archivie's name must finish with .gz to extract its.
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : to decompress file.
+                    \end{itemize}
+                \subsubsection{BZIP2}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{bzip2 arguments archivie}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -d : to decompress file.
+                    \end{itemize}
+                \subsubsection{TAR}
+                    Compress and decompress file, create archivie and other\dots
+                    \textbf{tar arguments  -f archivie}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item -x : to extract file.
+                    \end{itemize}
+                \subsubsection{XXD}
+                    To create or to revert an hexdump\\
+                    \textbf{xxd arguments file\_source file\_destination}
+                    \paragraph{arguments}
+                    \begin{itemize}
+                        \item r: hexdump -> original
+                    \end{itemize}
+                \subsubsection{DIFF}
+                    Print difference between two file\\
+                    \textbf{diff file1 file2}
+                \subsubsection{CRON}
+                        The cron command is a time-based job scheduler in Unix-like operating systems. It is used to schedule tasks (commands or shell scripts) to run periodically at fixed times, dates, or intervals. \texttt{cron} is typically used for automating system maintenance, administrative tasks, or recurring processes.
+                \subsubsection{CRONTAB}
+                The crontab command is used to interact with the cron daemon. It allows users to create, edit, list, and remove cron jobs (scheduled tasks). Each user on a Unix-like system can have their own \texttt{crontab} file, which defines the schedule for their individual cron jobs.
+
+                Here is an example of a \texttt{crontab} entry:
+                    \begin{lstlisting}[language=bash]
+                    # m h  dom mon dow   command
+                    */15 * * * *   /path/to/script.sh
+                    \end{lstlisting}
+                    In this example, \texttt{/path/to/script.sh} will be executed every 15 minutes.
+
+        \subsection{Description of Directory}
+            \subsubsection{/etc/cron.d}
+                The \texttt{/etc/cron.d} directory is used for system-specific cron jobs. Instead of editing a single system-wide \texttt{crontab} file, individual cron jobs can be placed in separate files within this directory. The format of these files follows the standard cron job syntax. Each file in \texttt{/etc/cron.d} specifies a cron job and the user under which the job should run.
+
+            \subsubsection{/var/spool}        
+                The \texttt{/var/spool} directory is used to hold files that are queued for some kind of processing. It typically contains directories related to various services on the system. Here are some common directories found within \texttt{/var/spool}:
+
+                \begin{itemize}
+                    \item \texttt{/var/spool/cron}: Contains user-specific cron files (\texttt{crontab} files) which are managed by the \texttt{crontab} command.
+                    \item \texttt{/var/spool/mail}: Holds user mailbox files where incoming emails are stored for local delivery.
+                    \item \texttt{/var/spool/cups}: Stores print jobs in the CUPS (Common Unix Printing System) printing queue.
+                    \item \texttt{/var/spool/at}: Used by the \texttt{at} command to store jobs scheduled for one-time execution.
+                \end{itemize}
+
+                The \texttt{/var/spool} directory itself does not contain subdirectories directly related to cron jobs, but it is crucial for the system's operational workflow, particularly in managing queued and pending tasks like email deliveries and print jobs.
+            \subsubsection{/etc/passwd}
+                        The \texttt{/etc/passwd} file is a system file found on Unix and Unix-like operating systems. It stores essential user account information that is used during user authentication and login processes. Each line in the \texttt{passwd} file represents a user account and contains seven colon-separated fields:
+
+                        \begin{itemize}
+                            \item \textbf{Username (\texttt{username}):} This is the name of the user account.
+                            \item \textbf{Password (\texttt{password}):} Traditionally, this field used to contain the encrypted password for the user account. However, modern systems often store an 'x' character here, with the actual password hash stored in the \texttt{/etc/shadow} file for security reasons.
+                            \item \textbf{User ID (\texttt{UID}):} Each user is assigned a unique numerical User ID (UID). This ID is used by the system to identify the user.
+                            \item \textbf{Group ID (\texttt{GID}):} This field represents the primary group ID associated with the user.
+                            \item \textbf{User Info (\texttt{user information}):} This field typically contains additional information about the user, such as the user's full name, phone number, and other details.
+                            \item \textbf{Home Directory (\texttt{home directory}):} This is the absolute path to the user's home directory, where the user will be placed after logging in.
+                            \item \textbf{Shell (\texttt{login shell}):} This field specifies the default shell or command interpreter for the user when they log in. If this field is empty or set to \texttt{/bin/false}, the user will not be allowed to log in.
+                        \end{itemize}
+
+                        Here is an example line from the \texttt{/etc/passwd} file:
+                        \begin{lstlisting}[language=sh]
+                        john:x:1001:1001:John Smith:/home/john:/bin/bash
+                        \end{lstlisting}
+                        In this example:
+                        - Username: \texttt{john}
+                        - Password: \texttt{x} (actual password hash stored in \texttt{/etc/shadow})
+                        - UID: \texttt{1001}
+                        - GID: \texttt{1001}
+                        - User Info: \texttt{John Smith}
+                        - Home Directory: \texttt{/home/john}
+                        - Shell: \texttt{/bin/bash}
+
+                        It's important to note that direct editing of the \texttt{/etc/passwd} file is not recommended. User management tasks should be performed using dedicated commands such as \texttt{useradd}, \texttt{usermod}, and \texttt{userdel}, which manage both the \texttt{/etc/passwd} and \texttt{/etc/shadow} files securely.
+
+    \subsection{Manage Process}
+                    \subsubsection{\&}
+                        Create a background process with any command\\
+                        \textbf{command attribute \& }
+                \subsection{Programm}
+                        \subsubsection{Vim}
+                            \paragraph{Commands}
+                                \begin{itemize}
+                                    \item : -> Mode command line
+                                    \item :e -> open a file by current
+                                    \item i -> insert mode 
+                                    \item :set -> set up some option and it can be used to set up an enviromental variable like SHELL \textbf{ex} :set shell=/bin/bash
+                                \end{itemize}
+    \subsection{variable of Linux}
+                        \subsubsection{\$0}
+                                It is a variable that contain programm's name in execution.
+\section{Wireshark}
+                \subsection{Details}
+                \subsection{Filter}
+                                \subsubsection{Multifilter} 
+                                    You can write a filter or a multifilter using logic operator as \&\& (AND), ||(OR) and other.
+                                \subsubsection{Type of Filter}
+                                 There are many kind of filter already write:
+                                    \paragraph{pkt\_comment}
+                                    It can be used to search comment on packet.
+                                    \paragraph{frame}
+                                    Allow to analyze directly attribute of the frame
+                                    \paragraph{data}
+                                    Allow to analyze data  are contained in the pack
+\section{Python for webservice}
+                \subsection{requests}
+                                \subsubsection{GET}
+                                    It is a method of the module requests, that cna take as input an URL \textbf{Es. request.get(url)}. This permit to obtain a JSON server response, and it can be printed as simple text with method \textit{text}
+                                    \paragraph{parameters}
+                                        \begin{description}
+                                            \item [url] : server address
+                                            \item [params] : parameters that could be added to url to obtain other information or a specif page\textbf{Es. response.get(url, params=paylod), paylod is a dictionary}
+                                            \item [headers]: it allowed to change headers of response \textbf{Es. requests.get(url,headers=variable)}
+                                                  \begin{description}
+                                                    \item[Accept]: it allow to change format that server have to send 
+                                                    \item[]  
+                                                  \end{description}  
+                                            \item[cookies]: it allow to select any cookies by server
+                                        \end{description}
+                                \subsubsection{Session()}
+                                    Create a session that permit to save cookies, it is a method of \textit{requests} and has a own get method
+                                \subsubsection{HEAD}
+                                        It allow to recevie only headers. To print results \textbf{response.headers} 
+                                \subsubsection{POST}
+                                    To use POST method is like GET method, you must insert an URL, but you can also send complex data
+                                        \paragraph{Old way to send data}
+                                            Create a dictionary and put it into a data parameters \textbf{requests.post(url,data=data)}, this way is old and few used
+                                        \paragraph{JSON}
+                                            New way is JSON, and method POST has a parameters JSON that obbligate who respond to use json format  \textbf{requests.post(url,json=data)}
+                \subsection{BeautifulSoup}
+                                    \subsubsection{find\_all}
+                                        \href{https://www.crummy.com/software/BeautifulSoup/bs4/doc/\#searching\-the\-tree}{find\_all}
+                \subsection{\hyperref[https://pycryptodome.readthedocs.io/en/latest/index.html]{PyCryptodome}} 
+                \subsection{Other Function}
+                                        \subsubsection{Class bytes}
+                                                \paragraph{method}
+                                                        \begin{description}
+                                                            \item[chr()] : convert from decimal to ASCII 
+                                                            \item[fromhex()]: return a type bytes from a hexdecimal string \textbf{Es. bytestr = bytes.fromhex('666c61677b68337834646563696d616c5f63346e5f62335f41424144424142457d')
+                                                            }  
+                                                            \item [to\_bytes(lenght,endianess)]: convert an integer in bytes
+                                                            \item [base64]: library that contain command b64decode() used to decode a string coded in base64
+                                                        \end{description}
+                                                \paragraph{tip}
+                                                        \begin{itemize}
+                                                            \item if you want search in a  bytes string, for example with command find(), you must use this method \textit{b' '}
+                                                        \end{itemize}
+        \section{SQL Injection} 
+                            \href{http://web-17.challs.olicyber.it/}{Info}
+                                            
+
+                    
+                                
+
+
+
+
+
+
+
+
+\end{document}
