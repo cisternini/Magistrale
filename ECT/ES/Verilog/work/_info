@@ -10,21 +10,21 @@ z2
 cModel Technology
 dC:/intelFPGA/20.1
 vmux_2_to_1
-DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
+Z0 DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
 !s110 1727979544
 !i10b 1
 !s100 l[N_FZPD1b^5;FhdK=3dn3
-!s11b Dg1SIo80bB@j0V0VzS_@n1
+Z1 !s11b Dg1SIo80bB@j0V0VzS_@n1
 IXO8:=cBWaiYNJ9Gj4eG<_3
-VDg1SIo80bB@j0V0VzS_@n1
+Z2 VDg1SIo80bB@j0V0VzS_@n1
 S1
-dD:/Universita/Magistrale/ECT/ES/Verilog
+Z3 dD:/Universita/Magistrale/ECT/ES/Verilog
 w1727954553
 8D:/Universita/Magistrale/ECT/ES/Verilog/sorgenti/es1.sv
 FD:/Universita/Magistrale/ECT/ES/Verilog/sorgenti/es1.sv
 !i122 0
 L0 1 7
-OV;L;2020.1;71
+Z4 OV;L;2020.1;71
 r1
 !s85 0
 31
@@ -32,5 +32,30 @@ r1
 !s107 D:/Universita/Magistrale/ECT/ES/Verilog/sorgenti/es1.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|D:/Universita/Magistrale/ECT/ES/Verilog/sorgenti/es1.sv|
 !i113 1
-o-work work -sv
-tCvgOpt 0
+Z5 o-work work -sv
+Z6 tCvgOpt 0
+vreg_8
+R0
+!s110 1729519141
+!i10b 1
+!s100 @P^[IeG5iVT5zYfE]:UWj0
+R1
+IFz_DbZT]`>Q50N9RC?XA;2
+R2
+S1
+R3
+w1729518405
+8D:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv
+FD:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv
+!i122 2
+L0 1 14
+R4
+r1
+!s85 0
+31
+!s108 1729519141.000000
+!s107 D:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|D:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv|
+!i113 1
+R5
+R6

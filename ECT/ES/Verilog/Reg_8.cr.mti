@@ -1,0 +1,8 @@
+D:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv {1 {vlog -work work -sv -stats=none D:/Universita/Magistrale/ECT/ES/Exercises/2.3/reg_8.sv
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module reg_8
+
+Top level modules:
+	reg_8
+
+} {} {}}

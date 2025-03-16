@@ -1,8 +1,29 @@
-# Compile of es1.sv was successful.
-vsim -gui work.mux_2_to_1
-# vsim -gui work.mux_2_to_1 
-# Start time: 20:19:18 on Oct 03,2024
+# Compile of reg_8.sv was successful.
+# Load canceled
+# Load canceled
+# Compile of reg_8.sv was successful.
+vsim -gui work.reg_8
+# vsim -gui work.reg_8 
+# Start time: 15:59:28 on Oct 21,2024
 # Loading sv_std.std
-# Loading work.mux_2_to_1
-# End time: 20:19:58 on Oct 03,2024, Elapsed time: 0:00:40
-# Errors: 0, Warnings: 5
+# Loading work.reg_8
+add wave sim:/reg_8/*
+run
+run
+run
+
+run 1
+run 10
+run 12
+do wave.do
+# Cannot open macro file: wave.do
+do sim.do
+# Cannot open macro file: sim.do
+ls
+# Reg_8.mpf     sorgenti         test_mux.mpf     text_mux.mpf  vsim.wlf  
+# modelsim.ini  test_mux.cr.mti  text_mux.cr.mti  transcript    work      
+ls
+# Reg_8.mpf     sorgenti         test_mux.mpf     text_mux.mpf  vsim.wlf  
+# modelsim.ini  test_mux.cr.mti  text_mux.cr.mti  transcript    work      
+# End time: 21:29:10 on Oct 21,2024, Elapsed time: 5:29:42
+# Errors: 0, Warnings: 6

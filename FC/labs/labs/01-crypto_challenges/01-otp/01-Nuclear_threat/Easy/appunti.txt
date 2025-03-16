@@ -1,0 +1,2 @@
+quindi From: ! è il prefisso, quindi anche nel codice da trovare c'è questo prefisso. 
+La chiave ki_b è formata da 4 byte quindi possono essere 
