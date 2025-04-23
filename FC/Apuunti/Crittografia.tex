@@ -176,8 +176,8 @@ Pertanto, lo spazio delle chiavi è:
 
 \subparagraph{Fatto.} Sia $\Pi = (\text{Gen}, \text{Enc}, \text{Dec})$ uno schema di cifratura con $|M| = |K| = |C|$. Lo schema è perfettamente sicuro se e solo se:
 \begin{enumerate}
-    \item  $\foreach k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
-    \item  $\foreach m \in M$ \land $c \in C \exist! $k \in K : E_k(m) = c$
+    \item  $\forall k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
+    \item  $\forall m \in M$ \land $c \in C \exist! k \in K : E_k(m) = c$
 \end{enumerate}
 
 \subparagraph{Nota:}
@@ -193,6 +193,20 @@ La perfetta segretezza è equivalente alla sicurezza incondizionata. In questo m
 \begin{itemize}
     \item I bit della chiave devono essere scelti in modo veramente casuale
     \item La lunghezza della chiave deve essere maggiore o uguale alla lunghezza del messaggio (secondo il teorema di Shannon)
+
+
+\paragraph{Indistinguibilità perfetta}
+Sia $\Pi = (G, E, D)$ uno schema di cifratura definito su insiemi $K$, $M$, $C$.
+
+$\Pi$ ha \emph{indistinguibilità perfetta} se e solo se:
+\[
+\forall m_1, m_2 \in M,\ |m_1| = |m_2|,\ \forall c \in C,\ \text{con } k \leftarrow G \text{ uniforme}:
+\quad \Pr[E(k, m_1) = c] = \Pr[E(k, m_2) = c]
+\]
+
+\subparagraph{Fatto}
+$\Pi$ ha indistinguibilità perfetta $\iff$ $\Pi$ è perfettamente sicuro.
+
 \end{itemize}
 
             
