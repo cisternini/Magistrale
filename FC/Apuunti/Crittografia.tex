@@ -176,14 +176,23 @@ Pertanto, lo spazio delle chiavi è:
 
 \subparagraph{Fatto.} Sia $\Pi = (\text{Gen}, \text{Enc}, \text{Dec})$ uno schema di cifratura con $|M| = |K| = |C|$. Lo schema è perfettamente sicuro se e solo se:
 \begin{enumerate}
-    \item Ogni $k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
-    \item Per ogni $m \in M$ e ogni $c \in C$ esiste una ed una sola chiave $k \in K$ tale che $E_k(m) = c$
+    \item  $\foreach k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
+    \item  $\foreach m \in M$ \land $c \in C \exist $k \in K$ tale che $E_k(m) = c$
 \end{enumerate}
 
 \subparagraph{Nota:}
 \begin{itemize}
     \item La condizione 1 è facile da verificare
     \item La condizione 2 non richiede il calcolo di probabilità
+\end{itemize}
+
+\paragraph{Sicurezza incondizionata}
+La perfetta segretezza è equivalente alla sicurezza incondizionata. In questo modello, si assume che un avversario disponga di risorse computazionali illimitate. L'osservazione del testo cifrato non fornisce quindi alcuna informazione utile all'avversario riguardo al messaggio originale.
+
+\subparagraph{Condizioni necessarie}
+\begin{itemize}
+    \item I bit della chiave devono essere scelti in modo veramente casuale
+    \item La lunghezza della chiave deve essere maggiore o uguale alla lunghezza del messaggio (secondo il teorema di Shannon)
 \end{itemize}
 
             
