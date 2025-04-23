@@ -156,6 +156,36 @@ Pertanto, lo spazio delle chiavi è:
 12 \cdot 26 = 312
 \]
 
+\paragraph{Teorema di Shannon}
+
+\subparagraph{Teorema di Shannon}
+\begin{itemize}
+    \item In un cifrario perfetto, $|K| \geq |M|$
+    \item Ovvero, il numero di chiavi non può essere inferiore al numero di messaggi
+\end{itemize}
+
+\subparagraph{Dimostrazione (per assurdo):}
+\begin{enumerate}
+    \item Supponiamo che $|K| < |M|$
+    \item Deve valere $|C| \geq |M|$, altrimenti il cifrario non è invertibile
+    \item Quindi, $|C| > |K|$
+    \item Sia $m \in M$ tale che $\Pr[M = m] \neq 0$; si calcoli $c_i \leftarrow E(k_i, m)$ per ogni $k_i \in K$
+    \item Per il punto (3), esiste almeno un $c$ tale che $c \neq c_i$ per ogni $k_i \in K$
+    \item Allora $\Pr[M = m \mid C = c] = 0$, che è diverso da $\Pr[M = m]$, contraddicendo la definizione di cifrario perfetto
+\end{enumerate}
+
+\subparagraph{Fatto.} Sia $\Pi = (\text{Gen}, \text{Enc}, \text{Dec})$ uno schema di cifratura con $|M| = |K| = |C|$. Lo schema è perfettamente sicuro se e solo se:
+\begin{enumerate}
+    \item Ogni $k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
+    \item Per ogni $m \in M$ e ogni $c \in C$ esiste una ed una sola chiave $k \in K$ tale che $E_k(m) = c$
+\end{enumerate}
+
+\subparagraph{Nota:}
+\begin{itemize}
+    \item La condizione 1 è facile da verificare
+    \item La condizione 2 non richiede il calcolo di probabilità
+\end{itemize}
+
             
  
        
