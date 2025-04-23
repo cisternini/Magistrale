@@ -15,6 +15,7 @@
 
     
   \section{Crittografia Simmetrica}
+  \subsection{Introduzione}
     Se parliamo di crittografia Simmetrica, stiamo considerando uno schema in cui sono presenti almeno 2 agenti (Bob, Alice) che devono scambiare un messaggio in maniera sicura senza che un terzo (che potrebbe avere intenzioni malevole) possa capire il messaggio. 
     Il modello quindi prevede una funzione di cifrazione (Enc) e una funzione di decifrazione (Dec), una chiave condivisa (k) e due tipi di messaggio, \textit{x} detto messaggio in chiaro (plaintext) e \textit{y} detto messaggio cifrato (ciphertext) ; la funzione di criptazione è determinata da un algoritmo che pubblicamente conosciuto, quello che invece rende sicuro l'utilizzo della cifratura simmetrica è la segretezza e lunghezza della chiave. 
     \includegraphics{./immagini/modello.png} 
@@ -156,61 +157,114 @@ Pertanto, lo spazio delle chiavi è:
 12 \cdot 26 = 312
 \]
 
-\paragraph{Teorema di Shannon}
 
-\subparagraph{Teorema di Shannon}
-\begin{itemize}
-    \item In un cifrario perfetto, $|K| \geq |M|$
-    \item Ovvero, il numero di chiavi non può essere inferiore al numero di messaggi
-\end{itemize}
+\subsection{Cifrario Perfetto}
+  \subsubsection{Introduzione}
+            Nel contesto della sicurezza crittografica, si considera un attaccante con la capacità di condurre un \textit{ciphertext-only attack}, ovvero un attacco in cui l'unica informazione disponibile è il testo cifrato.
 
-\subparagraph{Dimostrazione (per assurdo):}
-\begin{enumerate}
-    \item Supponiamo che $|K| < |M|$
-    \item Deve valere $|C| \geq |M|$, altrimenti il cifrario non è invertibile
-    \item Quindi, $|C| > |K|$
-    \item Sia $m \in M$ tale che $\Pr[M = m] \neq 0$; si calcoli $c_i \leftarrow E(k_i, m)$ per ogni $k_i \in K$
-    \item Per il punto (3), esiste almeno un $c$ tale che $c \neq c_i$ per ogni $k_i \in K$
-    \item Allora $\Pr[M = m \mid C = c] = 0$, che è diverso da $\Pr[M = m]$, contraddicendo la definizione di cifrario perfetto
-\end{enumerate}
+            \paragraph{Requisiti di sicurezza}
+                Un cifrario è considerato sicuro se soddisfa i seguenti requisiti:
+            \begin{itemize}
+                \item L'attaccante non è in grado di recuperare la chiave segreta.
+                \item L'attaccante non è in grado di risalire al testo in chiaro (plaintext).
+                \end{itemize}
 
-\subparagraph{Fatto.} Sia $\Pi = (\text{Gen}, \text{Enc}, \text{Dec})$ uno schema di cifratura con $|M| = |K| = |C|$. Lo schema è perfettamente sicuro se e solo se:
-\begin{enumerate}
-    \item  $\forall k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
-    \item  $\forall m \in M$ \land $c \in C \exist! k \in K : E_k(m) = c$
-\end{enumerate}
+            \paragraph{Intuizione di un cifrario perfettamente sicuro}
+                L'idea alla base di un cifrario perfettamente sicuro è che, indipendentemente da qualsiasi informazione pregressa che l'attaccante possa avere sul testo in chiaro, il testo cifrato non deve fornire alcuna informazione aggiuntiva su di esso.
+  \subsubsection{Approccio Probabilistico}
+   Nel contesto della crittografia, il messaggio $M$ viene modellato come una variabile aleatoria, secondo una distribuzione di probabilità detta \textit{distribuzione del plaintext}. Ad esempio, si potrebbe avere:
 
-\subparagraph{Nota:}
-\begin{itemize}
-    \item La condizione 1 è facile da verificare
-    \item La condizione 2 non richiede il calcolo di probabilità
-\end{itemize}
+  \begin{itemize}
+      \item $\Pr[M = \text{``attack today''}] = 0.7$
+      \item $\Pr[M = \text{``don't attack''}] = 0.3$
+  \end{itemize}
+  
+  Queste probabilità rappresentano la \textit{conoscenza a priori} che un attaccante potrebbe avere riguardo al contenuto del messaggio.
+  
+  Il generatore di chiavi $\text{Gen}()$ definisce una distribuzione di probabilità sulla chiave $K$, ovvero:
+  \[
+  \Pr[K = k] = \Pr[k \leftarrow \text{Gen}()]
+  \]
+  Le variabili aleatorie $M$ (messaggio) e $K$ (chiave) si assumono indipendenti.
+  
+  \paragraph{Processo di generazione del ciphertext}
+  \begin{enumerate}
+      \item Si sceglie un messaggio $m$ secondo la distribuzione di $M$.
+      \item Si genera una chiave $k$ da $\text{Gen}()$.
+      \item Si calcola il testo cifrato $c \leftarrow E_k(m)$.
+  \end{enumerate}
+  
+  Il testo cifrato $C$ risultante è anch'esso una variabile aleatoria, e il processo di cifratura definisce una distribuzione di probabilità indotta su $C$.
 
-\paragraph{Sicurezza incondizionata}
-La perfetta segretezza è equivalente alla sicurezza incondizionata. In questo modello, si assume che un avversario disponga di risorse computazionali illimitate. L'osservazione del testo cifrato non fornisce quindi alcuna informazione utile all'avversario riguardo al messaggio originale.
+  \paragraph{Segretezza Perfetta}
 
-\subparagraph{Condizioni necessarie}
-\begin{itemize}
-    \item I bit della chiave devono essere scelti in modo veramente casuale
-    \item La lunghezza della chiave deve essere maggiore o uguale alla lunghezza del messaggio (secondo il teorema di Shannon)
+  La \textit{segretezza perfetta} è un concetto fondamentale introdotto da Claude Shannon nel 1949. In modo informale, si riferisce alla condizione in cui il testo cifrato non rivela alcuna informazione sul testo in chiaro. Formalizziamo l'idea di ``informazione sul plaintext'' in termini di distribuzione di probabilità.
+  
+  Un sistema di cifratura gode di segretezza perfetta se, per ogni messaggio $m \in M$ e ogni testo cifrato $c \in C$ tale che $\Pr[C = c] > 0$, vale la seguente uguaglianza:
+  \[
+  \Pr[M = m \mid C = c] = \Pr[M = m]
+  \]
+  Questo implica che la probabilità a posteriori che un messaggio sia $m$, dato il testo cifrato $c$, è uguale alla probabilità a priori che il messaggio fosse $m$: osservare il testo cifrato non fornisce alcuna informazione aggiuntiva.
+  
+  Una formulazione equivalente della segretezza perfetta è la seguente:
+  \[
+  \forall m, m' \in M, \forall c \in C, \quad \Pr[E_k(m) = c] = \Pr[E_k(m') = c]
+  \]
+  In altre parole, la distribuzione del testo cifrato è indipendente dal messaggio originale. La distribuzione a priori del plaintext (prima di osservare il ciphertext) e quella a posteriori (dopo aver osservato il ciphertext) devono coincidere.
+  
+  \paragraph{Teorema di Shannon}
 
-
-\paragraph{Indistinguibilità perfetta}
-Sia $\Pi = (G, E, D)$ uno schema di cifratura definito su insiemi $K$, $M$, $C$.
-
-$\Pi$ ha \emph{indistinguibilità perfetta} se e solo se:
-\[
-\forall m_1, m_2 \in M,\ |m_1| = |m_2|,\ \forall c \in C,\ \text{con } k \leftarrow G \text{ uniforme}:
-\quad \Pr[E(k, m_1) = c] = \Pr[E(k, m_2) = c]
-\]
-
-\subparagraph{Fatto}
-$\Pi$ ha indistinguibilità perfetta $\iff$ $\Pi$ è perfettamente sicuro.
-
-\end{itemize}
-
+  \subparagraph{Teorema di Shannon}
+  \begin{itemize}
+      \item In un cifrario perfetto, $|K| \geq |M|$
+      \item Ovvero, il numero di chiavi non può essere inferiore al numero di messaggi
+  \end{itemize}
+  
+  \subparagraph{Dimostrazione (per assurdo):}
+  \begin{enumerate}
+      \item Supponiamo che $|K| < |M|$
+      \item Deve valere $|C| \geq |M|$, altrimenti il cifrario non è invertibile
+      \item Quindi, $|C| > |K|$
+      \item Sia $m \in M$ tale che $\Pr[M = m] \neq 0$; si calcoli $c_i \leftarrow E(k_i, m)$ per ogni $k_i \in K$
+      \item Per il punto (3), esiste almeno un $c$ tale che $c \neq c_i$ per ogni $k_i \in K$
+      \item Allora $\Pr[M = m \mid C = c] = 0$, che è diverso da $\Pr[M = m]$, contraddicendo la definizione di cifrario perfetto
+  \end{enumerate}
+  
+  \subparagraph{Fatto.} Sia $\Pi = (\text{Gen}, \text{Enc}, \text{Dec})$ uno schema di cifratura con $|M| = |K| = |C|$. Lo schema è perfettamente sicuro se e solo se:
+  \begin{enumerate}
+      \item  $\forall k \in K$ è scelto con probabilità uniforme $1/|K|$ da Gen
+      \item  $\forall m \in M \land c \in C, \exists! k \in K : E_k(m) = c$
+  \end{enumerate}
+  
+  \subparagraph{Nota:}
+  \begin{itemize}
+      \item La condizione 1 è facile da verificare
+      \item La condizione 2 non richiede il calcolo di probabilità
+  \end{itemize}
+  
+  \paragraph{Sicurezza incondizionata}
+  La perfetta segretezza è equivalente alla sicurezza incondizionata. In questo modello, si assume che un avversario disponga di risorse computazionali illimitate. L'osservazione del testo cifrato non fornisce quindi alcuna informazione utile all'avversario riguardo al messaggio originale.
+  
+  \subparagraph{Condizioni necessarie}
+  \begin{itemize}
+      \item I bit della chiave devono essere scelti in modo veramente casuale
+      \item La lunghezza della chiave deve essere maggiore o uguale alla lunghezza del messaggio (secondo il teorema di Shannon)
+  \end{itemize}
+  
+  \paragraph{Indistinguibilità perfetta}
+  Sia $\Pi = (G, E, D)$ uno schema di cifratura definito su insiemi $K$, $M$, $C$.
+  
+  $\Pi$ ha \emph{indistinguibilità perfetta} se e solo se:
+  \[
+  \forall m_1, m_2 \in M,\ |m_1| = |m_2|,\ \forall c \in C,\ \text{con } k \leftarrow G \text{ uniforme}:
+  \quad \Pr[E(k, m_1) = c] = \Pr[E(k, m_2) = c]
+  \]
+  
+  \subparagraph{Fatto}
+  $\Pi$ ha indistinguibilità perfetta $\iff$ $\Pi$ è perfettamente sicuro.
+  
             
- 
+    \subsubsection{One-Time Pad}
        
         
-    \end{document}
+  \end{document}
