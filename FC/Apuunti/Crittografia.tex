@@ -922,4 +922,127 @@ Infine, si osserva che:
 
 \textbf{SVOLGERE E AGGIUNGERE GLI ESERCIZI DEL SLIDE 1.04}
 
+\subsection{Cifratura Multipla e Key Whitening}
+
+L'aumento della sicurezza nei cifrari a blocchi può essere ottenuto attraverso tecniche che mirano a rendere più difficile la crittoanalisi, anche quando l'algoritmo di base (come DES) è già considerato sicuro ma affetto da limiti strutturali, come la lunghezza della chiave.
+
+\subsubsection{Motivazioni per il Potenziamento di DES}
+
+Nonostante DES sia un cifrario considerato sicuro in quanto non esistono attacchi efficienti noti, presenta diversi limiti:
+\begin{itemize}
+    \item La lunghezza della chiave (56 bit) è ormai troppo corta per gli standard moderni.
+    \item DES non definisce un gruppo, cioè la composizione di due cifrature non equivale, in generale, a una terza cifratura con una chiave diversa.
+\end{itemize}
+
+Queste debolezze aprono la strada a due tecniche di rafforzamento:
+\begin{enumerate}
+    \item \textbf{Cifratura multipla (multiple encryption)}
+    \item \textbf{Key whitening}, cioè l'aggiunta di operazioni di XOR con chiavi ausiliarie prima e/o dopo la cifratura.
+\end{enumerate}
+
+\paragraph{La non chiusura di DES come gruppo}
+
+Se DES definisse un gruppo, allora per ogni coppia di chiavi $k_1, k_2$ dovrebbe esistere una chiave $k_3$ tale che:
+\[
+E_{k_1}(E_{k_2}(x)) = E_{k_3}(x) \quad \forall x
+\]
+In tal caso, l'applicazione ripetuta di DES non aumenterebbe la sicurezza. Fortunatamente, ciò non è vero: DES non è chiuso rispetto alla composizione, quindi la cifratura multipla è un’opzione concreta.
+
+\subsubsection{Cifratura Doppia (2DES)}
+
+La cifratura doppia consiste nell'applicare due volte DES, ciascuna con una chiave indipendente:
+\[
+y = E(e_R, E(e_L, x))
+\]
+Dove $e_L$ ed $e_R$ sono due chiavi distinte. La lunghezza della chiave totale diventa $2k$, e un attacco brute-force richiede $2^{2k}$ tentativi, rendendolo teoricamente più sicuro. Tuttavia, questo approccio non è immune da vulnerabilità.
+
+\paragraph{Attacco Meet-in-the-Middle}
+
+Questa tecnica sfrutta l'idea che si possa ``incontrare al centro'' dell’operazione di cifratura:
+\begin{enumerate}
+    \item Si calcolano tutte le cifrature intermedie $z = E(e_L, x)$ per tutte le possibili chiavi $e_L$, e si memorizzano in una tabella $T$.
+    \item Per ogni possibile chiave $e_R$, si calcola $z' = D(e_R, y)$ e si verifica se $z'$ è presente in $T$.
+    \item Se sì, si ha un possibile candidato $(e_L, e_R)$ tale che $E(e_R, E(e_L, x)) = y$.
+\end{enumerate}
+
+\subparagraph{Complessità dell'attacco}
+
+\begin{itemize}
+    \item Complessità temporale: $\mathcal{O}(k \cdot 2^k)$
+    \item Complessità spaziale: $\mathcal{O}(2^k)$
+\end{itemize}
+
+\paragraph{Limiti di 2DES}
+
+Nonostante l’uso di due chiavi indipendenti, la cifratura doppia (2DES) non offre un vantaggio di sicurezza proporzionale, poiché l’attacco meet-in-the-middle riduce la sicurezza effettiva a circa $2^k$ operazioni, cioè la stessa di un singolo DES.
+
+\subsubsection{Triple DES (3DES)}
+
+Per ovviare ai limiti di 2DES, si introduce la cifratura tripla:
+\[
+Y = E(e_1, D(e_2, E(e_3, x)))
+\]
+Questo schema, noto come EDE (Encrypt-Decrypt-Encrypt), è standardizzato (ANSI X9.17 e ISO 8732). Se $e_1 = e_2 = e_3$, allora l’algoritmo si riduce a DES classico, mantenendo la compatibilità retroattiva.
+
+\paragraph{Caratteristiche}
+
+\begin{itemize}
+    \item Lunghezza della chiave: fino a 168 bit (tre chiavi da 56 bit).
+    \item Sicurezza effettiva: circa $2^{112}$ operazioni per un attacco brute-force.
+    \item Rallentamento: 3 volte più lento rispetto a DES.
+\end{itemize}
+
+\paragraph{Attacco Meet-in-the-Middle su 3DES}
+
+Sebbene possibile in teoria, richiede:
+\begin{itemize}
+    \item Tempo: $2^{112}$ (non realizzabile con le tecnologie attuali).
+    \item Spazio: $2^{56}$ (quantità molto elevata).
+\end{itemize}
+
+\subsubsection{Falsi Positivi nella Cifratura Multipla}
+
+\begin{theorem}
+Supponiamo di avere $r$ cifrature successive con un cifrario a blocchi di chiave $k$ e blocco di $n$ bit. Dati $t$ coppie $(pt_i, ct_i)$, il numero atteso di chiavi false che producono gli stessi output è:
+\[
+2^{rk - tn}
+\]
+\end{theorem}
+
+\paragraph{Interpretazione}
+
+Questo implica che, aumentando il numero di coppie testo chiaro-cifrato ($t$), si riduce drasticamente la probabilità di incorrere in falsi positivi, anche nel caso di cifrature multiple.
+
+\subsubsection{Limiti di 3DES}
+
+Sebbene resistente ad attacchi brute-force, 3DES presenta limitazioni:
+\begin{itemize}
+    \item È inefficiente nei sistemi software.
+    \item La dimensione del blocco ($n = 64$) è troppo piccola per applicazioni moderne come funzioni hash.
+    \item Non è resistente ai futuri attacchi quantistici, che richiederebbero lunghezze di chiave superiori a 256 bit.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{3des_limitations.png}
+    \caption{Limiti pratici di 3DES: prestazioni, sicurezza e blocchi di piccola dimensione.}
+\end{figure}
+
+\paragraph{Attacchi possibili}
+
+\begin{itemize}
+    \item \textbf{Brute-force}: richiede $2^{k + 2n}$ cifrature.
+    \item \textbf{Meet-in-the-middle}: con $2^{k + n}$ operazioni e $2^n$ coppie di dati.
+    \item \textbf{Attacchi migliorati con molti dati}: Se l'avversario ha $2^m$ coppie $(pt, ct)$, la complessità diventa $2^{k+n-m}$.
+\end{itemize}
+
+\subparagraph{Esempio con DES:}
+
+Con $m = 32$, si ottiene:
+\begin{itemize}
+    \item Tempo: $2^{88}$ operazioni (inattaccabile oggi).
+    \item Spazio: $2^{32}$ coppie, ovvero circa 64 GB di dati.
+\end{itemize}
+
+
   \end{document}
