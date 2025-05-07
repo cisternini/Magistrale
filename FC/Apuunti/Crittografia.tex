@@ -1000,14 +1000,18 @@ Sebbene possibile in teoria, richiede:
     \item Spazio: $2^{56}$ (quantità molto elevata).
 \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./immagini/mim_3des.png}
+    \end{figure}
+
 \subsubsection{Falsi Positivi nella Cifratura Multipla}
 
-\begin{theorem}
+
 Supponiamo di avere $r$ cifrature successive con un cifrario a blocchi di chiave $k$ e blocco di $n$ bit. Dati $t$ coppie $(pt_i, ct_i)$, il numero atteso di chiavi false che producono gli stessi output è:
 \[
 2^{rk - tn}
 \]
-\end{theorem}
 
 \paragraph{Interpretazione}
 
@@ -1022,11 +1026,6 @@ Sebbene resistente ad attacchi brute-force, 3DES presenta limitazioni:
     \item Non è resistente ai futuri attacchi quantistici, che richiederebbero lunghezze di chiave superiori a 256 bit.
 \end{itemize}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{3des_limitations.png}
-    \caption{Limiti pratici di 3DES: prestazioni, sicurezza e blocchi di piccola dimensione.}
-\end{figure}
 
 \paragraph{Attacchi possibili}
 
@@ -1044,5 +1043,1379 @@ Con $m = 32$, si ottiene:
     \item Spazio: $2^{32}$ coppie, ovvero circa 64 GB di dati.
 \end{itemize}
 
+
+\subsubsection{Key Whitening}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./immagini/key_whitening.png} % Sostituire con il nome corretto del file
+    \caption{Esempio di Key Whitening}
+    \label{fig:key-whitening}
+\end{figure}
+
+\paragraph{Considerazioni}
+\begin{itemize}
+    \item Il \textit{Key Whitening} (KW) non rappresenta una soluzione definitiva per rendere sicuro un cifrario debole: può aumentare la complessità degli attacchi, ma non corregge vulnerabilità strutturali dell’algoritmo di base.
+\end{itemize}
+
+\paragraph{Applicazioni}
+\begin{description}
+    \item[DESX] Variante del Data Encryption Standard (DES) che integra il key whitening per aumentare la sicurezza, estendendo la chiave effettiva.
+    \item[AES] L’Advanced Encryption Standard incorpora KW internamente, migliorando la resistenza contro attacchi differenziali e lineari.
+\end{description}
+
+\paragraph{Prestazioni}
+\begin{itemize}
+    \item Il key whitening introduce un sovraccarico computazionale trascurabile: consiste semplicemente in due operazioni XOR aggiuntive, una prima della cifratura e una dopo.
+\end{itemize}
+
+\paragraph{Attacchi}
+\begin{description}
+    \item[Attacco a forza bruta:] 
+    \begin{itemize}
+        \item \textbf{Complessità temporale:} $2^k + 2^n$ operazioni di cifratura, dove $k$ è la lunghezza della chiave e $n$ la dimensione del blocco.
+    \end{itemize}
+
+    \item[Attacco \textit{meet-in-the-middle}:] 
+    \begin{itemize}
+        \item \textbf{Complessità temporale:} $2^{k+n}$ operazioni.
+        \item \textbf{Complessità di memoria:} $2^n$ set di dati (coppie plaintext-ciphertext).
+    \end{itemize}
+
+    \item[Attacco ottimizzato con dati conosciuti:] 
+    \begin{itemize}
+        \item Se l’avversario riesce a raccogliere $2^m$ coppie plaintext-ciphertext, la complessità temporale si riduce a $2^{k+n-m}$.
+        \item Tuttavia, l'attaccante spesso non può controllare $m$ a causa di politiche di rigenerazione della chiave (\textit{rekeying}).
+    \end{itemize}
+
+    \item[Esempio con DES ($m = 32$):]
+    \begin{itemize}
+        \item \textbf{Complessità temporale:} $2^{88}$ cifrature, irrealizzabile con la tecnologia attuale.
+        \item \textbf{Complessità di memoria:} $2^{32}$ coppie plaintext-ciphertext, pari a circa 64 GB di dati.
+    \end{itemize}
+\end{description}
+
+\subsection{Encryption Mode}
+\subsubsection{Modalità di cifratura}
+
+Un cifrario a blocchi elabora messaggi suddivisi in blocchi di lunghezza fissa $n$ bit. Quando il messaggio è più lungo, si utilizzano apposite modalità operative (\textit{modes of operation}) per estendere la cifratura in modo sicuro su dati arbitrari.
+
+\subsubsection{Modalità principali}
+
+\begin{itemize}
+    \item \textbf{ECB}  Electronic Codebook
+    \item \textbf{CBC}  Cipher-Block Chaining
+\end{itemize}
+
+\subsubsection{Modalità avanzate e alternative}
+
+\paragraph{Per simulare cifrari a flusso:}
+\begin{itemize}
+    \item \textbf{CFB}  Cipher Feedback
+    \item \textbf{OFB}  Output Feedback
+    \item \textbf{CTR}  Counter Mode
+\end{itemize}
+
+\paragraph{Per cifratura autenticata:}
+\begin{itemize}
+    \item \textbf{GCM}, \textbf{CCM}, ecc.
+\end{itemize}
+
+\paragraph{Altri esempi:}
+\begin{itemize}
+    \item \textbf{CTS}  Ciphertext Stealing
+\end{itemize}
+
+Le modalità di cifratura permettono ai cifrari a blocchi di adattarsi a una vasta gamma di esigenze crittografiche, rendendoli estremamente versatili.
+
+\subsubsection{Electronic Codebook (ECB)}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./immagini/ecb.png} % Sostituire con il nome corretto del file immagine
+    \caption{Schema della modalità ECB}
+    \label{fig:ecb-mode}
+\end{figure}
+
+\paragraph{Descrizione:} ogni blocco del plaintext è cifrato indipendentemente dagli altri. Blocchi di input uguali producono blocchi di output uguali.
+
+\paragraph{Vantaggi:} 
+\begin{itemize}
+    \item Nessuna propagazione dell'errore: un errore in un blocco non influenza gli altri.
+    \item Elevata parallelizzabilità di cifratura e decifratura.
+\end{itemize}
+
+\paragraph{Svantaggi (Critici):}
+\begin{itemize}
+    \item Blocchi identici producono lo stesso output cifrato.
+    \item Non nasconde pattern nei dati.
+    \item Permette analisi del traffico (pattern visibili).
+    \item Facilita attacchi tramite riordinamento o sostituzione dei blocchi.
+\end{itemize}
+
+\subsubsection{Caso di studio: Attacco ECB  Lou Cipher}
+
+\paragraph{Obiettivo:} Lou Cipher cerca di truffare una banca replicando messaggi validi come \texttt{"accredita 100\$"}.
+
+\paragraph{Fasi dell’attacco:}
+\begin{enumerate}
+    \item Invia $k$ messaggi identici → ottiene $k$ CT simili.
+    \item Identifica blocchi cifrati ripetuti che corrispondono al suo messaggio.
+    \item Replica quei CT per effettuare accrediti multipli.
+\end{enumerate}
+
+\paragraph{Problema:} il messaggio non contiene riferimenti temporali, quindi è facilmente ripetibile (replay attack).
+
+\paragraph{Prima contromisura:}
+\begin{itemize}
+    \item Si aggiunge un timestamp (es. 8 byte) come primo blocco.
+    \item Messaggi duplicati vengono ora scartati.
+\end{itemize}
+
+\paragraph{Attacco adattato:}
+\begin{enumerate}
+    \item Lou Cipher individua i propri CT (blocchi \#2-\#13).
+    \item Sostituisce il blocco \#1 (timestamp) con quello di un messaggio recente valido.
+    \item Invia il CT modificato che supera il controllo temporale.
+\end{enumerate}
+
+\paragraph{Conclusione:} la modalità ECB è inadatta per qualsiasi scenario reale che richieda sicurezza. È vulnerabile a numerosi attacchi, soprattutto se usata senza misure di autenticazione o randomizzazione.
+
+\subsubsection{Cipher block chaining (CBC)}
+
+\begin{align*}
+    \textbf{Encryption:} \quad & c_0 \leftarrow IV,\quad \forall 1 \leq i \leq t,\quad c_i \leftarrow E_k(p_i \oplus c_{i-1}) \\
+    \textbf{Decryption:} \quad & c_0 \leftarrow IV,\quad \forall 1 \leq i \leq t,\quad p_i \leftarrow c_{i-1} \oplus D_k(c_i)
+    \end{align*}
+    
+
+    \paragraph{Proprietà della modalità CBC}
+
+    La modalità \textbf{CBC (Cipher Block Chaining)} è ampiamente utilizzata nei cifrari a blocchi grazie alle sue caratteristiche di sicurezza e versatilità.
+    
+    \subparagraph{Sicurezza CPA}
+    CBC è \textit{CPA-secure} (Chosen-Plaintext Attack secure), a patto che venga utilizzato correttamente un vettore di inizializzazione (IV) casuale. L'IV, infatti, introduce randomizzazione nella cifratura e impedisce che plaintext identici producano ciphertext uguali sotto la stessa chiave. Tuttavia, se l'IV viene riutilizzato, la protezione viene meno.
+    
+    \subparagraph{Dipendenze tra blocchi}
+    In CBC, ogni blocco cifrato $c_i$ dipende sia dal blocco di plaintext corrente $p_i$ sia dal blocco cifrato precedente $c_{i-1}$. Questo meccanismo a catena rende ogni blocco dipendente dai precedenti, garantendo che anche piccole variazioni nel messaggio producano ciphertext completamente diversi.
+    
+    \subparagraph{Sensibilità all'ordine e propagazione degli errori}
+    Una conseguenza del chaining è che l’ordine dei blocchi nel ciphertext è fondamentale: se i blocchi vengono riordinati, la decifratura produrrà risultati non validi. Inoltre, un singolo bit errato in un blocco cifrato $c_i$ compromette non solo il blocco decifrato $p_i$, ma anche il successivo $p_{i+1}$, causando quella che si definisce \textit{propagazione dell’errore}.
+    
+    \subparagraph{IV e integrità}
+    Il vettore di inizializzazione (IV) può essere trasmesso in chiaro, ma è fondamentale che la sua integrità sia garantita: un IV manipolato può compromettere la sicurezza della comunicazione. Inoltre, CBC comporta un'espansione minima del ciphertext, pari a un solo blocco aggiuntivo per l'IV.
+    
+    \subparagraph{Parallelizzazione}
+    Dal punto di vista prestazionale, solo la fase di decifratura in CBC può essere parallelizzata. La cifratura, invece, è intrinsecamente sequenziale a causa della dipendenza tra blocchi.
+    
+    \vspace{1em}
+    
+    \paragraph{Attacco ai blocchi in CBC}
+    
+    L’uso corretto dell’IV è cruciale anche per prevenire attacchi mirati. Ad esempio, se una banca (come Bank A) utilizza un IV casuale per ogni bonifico, questo protegge efficacemente dalla ripetizione fraudolenta di messaggi cifrati. Tuttavia, un attaccante (come Lou Cipher) potrebbe comunque tentare un attacco sostituendo blocchi specifici del ciphertext, ad esempio i blocchi \#5–10 e \#13, che potrebbero contenere il numero del conto e l’importo del deposito.
+    
+    In tal caso, la banca destinataria (Bank B) decifrerebbe quei blocchi in dati apparentemente validi ma in realtà casuali e potenzialmente dannosi. Questo dimostra che la sola cifratura non è sufficiente a garantire la sicurezza dei dati: è necessario affiancarla a meccanismi per garantire l’integrità, come:
+    
+    \begin{itemize}
+        \item \textbf{MDC (Modification Detection Code)}
+        \item \textbf{MAC (Message Authentication Code)}
+        \item \textbf{Firme digitali (Digital Signatures)}
+    \end{itemize}
+    
+    Senza questi strumenti, anche una modalità sicura come CBC può essere vulnerabile a manipolazioni silenziose e pericolose.
+    
+    \subsubsection{Output Feedback Mode (OFB)}
+
+    Sia \(e(\cdot)\) un cifrario a blocchi di dimensione \(b\); siano \(x_i\), \(y_i\) e \(s_i\) stringhe di bit di lunghezza \(b\); e sia \(IV\) un nonce di lunghezza \(b\).
+
+\begin{align*}
+\textit{Cifratura (primo blocco):} \quad & s_1 = e_k(IV), \quad y_1 = s_1 \oplus x_1 \\
+\textit{Cifratura (blocco generale):} \quad & s_i = e_k(s_{i-1}), \quad y_i = s_i \oplus x_i, \quad i \geq 2 \\
+\textit{Decifratura (primo blocco):} \quad & s_1 = e_k(IV), \quad x_1 = s_1 \oplus y_1 \\
+\textit{Decifratura (blocco generale):} \quad & s_i = e_k(s_{i-1}), \quad x_i = s_i \oplus y_i, \quad i \geq 2
+\end{align*}
+
+\includegraphics{immagini/OFB.png}
+
+\paragraph{Proprietà della modalità OFB}
+
+La modalità \textbf{OFB (Output Feedback)} costruisce un cifrario a flusso a partire da un cifrario a blocchi. In questa modalità, il flusso di chiavi viene generato blocco per blocco. Questo rende OFB un cifrario a flusso \textit{sincornizzato}, poiché il flusso di chiavi è determinato dalla chiave segreta \(K\) e dal vettore di inizializzazione (IV), senza dipendere dal testo in chiaro.
+
+\subparagraph{Precalcolo del flusso di chiavi}
+Una delle caratteristiche principali di OFB è che il flusso di chiavi può essere precalcolato. Questo significa che la sequenza di chiavi necessaria per cifrare o decifrare i dati può essere generata prima della trasmissione, migliorando così l'efficienza operativa.
+
+\subparagraph{Decifratura e ricezione}
+Un altro aspetto interessante di OFB è che il destinatario non ha bisogno di eseguire una vera e propria operazione di decifratura. In pratica, per recuperare il testo in chiaro, è sufficiente applicare lo stesso flusso di chiavi alla parte di ciphertext ricevuta, poiché la cifratura e la decifratura sono effettuate con lo stesso processo.
+
+\subparagraph{Gestione del blocco finale}
+Nel caso in cui l'ultimo blocco di testo in chiaro abbia una lunghezza inferiore alla dimensione di un blocco, i bit del flusso di chiavi che non vengono utilizzati per la cifratura vengono scartati. Ciò assicura che l’operazione di cifratura non generi dati superflui.
+
+\subparagraph{Vettore di inizializzazione (IV)}
+Il vettore di inizializzazione (IV) dovrebbe essere un \textit{nonce}, ossia un valore che non viene mai riutilizzato con la stessa chiave, per evitare potenziali vulnerabilità.
+
+\subparagraph{Sicurezza e vulnerabilità}
+OFB è una modalità senza \textit{propagazione degli errori}, il che significa che un errore in un blocco del ciphertext non influenzerà i blocchi successivi. Tuttavia, OFB è suscettibile alla \textit{malleabilità}: un attaccante potrebbe essere in grado di modificare il ciphertext senza invalidare completamente il messaggio decifrato, creando potenziali rischi di manipolazione dei dati.
+
+\subsubsection{Cipher Feedback Mode (CFB)}
+
+\includegraphics{immagini/CFB.png}
+
+Sia \(e(\cdot)\) un cifrario a blocchi di dimensione \(b\); siano \(x_i\), \(y_i\)  stringhe di bit di lunghezza \(b\); e sia \(IV\) un nonce di lunghezza \(b\).
+
+\begin{align*}
+\textit{Cifratura (primo blocco):} \quad & y_1 = e_k(IV) \oplus x_1  \\
+\textit{Cifratura (blocco generale):} \quad & y_i = e_k(y_{i-1}) \oplus x_i, \quad i \geq 2 \\
+\textit{Decifratura (primo blocco):} \quad & x_1 = e_k(IV) \oplus y_1 \\
+\textit{Decifratura (blocco generale):} \quad & x_i = e_k(y_{i-1}) \oplus y_i, \quad i \geq 2
+\end{align*}
+
+\paragraph{Proprietà della modalità CFB}
+
+La modalità \textbf{CFB (Cipher Feedback)} consente di costruire un cifrario a flusso a partire da un cifrario a blocchi. A differenza della modalità OFB, CFB è un cifrario a flusso \textit{asincrono}, poiché il flusso di chiavi dipende non solo dalla chiave segreta e dall'IV, ma anche dal ciphertext generato. Questo comporta una dipendenza sequenziale tra i blocchi durante la cifratura.
+
+\subparagraph{Generazione del flusso di chiavi}
+Il flusso di chiavi viene generato blocco per blocco, sfruttando la crittografia del blocco precedente. In particolare, ciascun blocco cifrato influenza la generazione del successivo, rendendo il sistema non deterministico anche a parità di chiave.
+
+\subparagraph{Vettore di inizializzazione}
+Come nelle altre modalità, anche in CFB è fondamentale l’utilizzo di un vettore di inizializzazione (IV), che deve essere un \textit{nonce}, cioè un valore unico e non ripetibile con la stessa chiave, per evitare che messaggi uguali generino ciphertext uguali.
+
+\subparagraph{Parallelizzazione}
+Una conseguenza della struttura della modalità CFB è che la cifratura deve essere eseguita in maniera sequenziale, poiché ogni blocco dipende dal precedente. Tuttavia, la decifratura può essere parallelizzata, poiché ogni blocco di plaintext può essere ottenuto indipendentemente una volta disponibile il corrispondente blocco di ciphertext.
+
+\subparagraph{Supporto per blocchi parziali}
+Un vantaggio interessante della modalità CFB è la possibilità di operare su blocchi di dimensione inferiore rispetto alla dimensione del blocco del cifrario. In altre parole, è possibile cifrare porzioni di testo più piccole (di lunghezza \( s \leq n \), dove \( n \) è la dimensione del blocco del cifrario), rendendo CFB adatta anche per applicazioni che richiedono elaborazioni su dati di lunghezza variabile o stream in tempo reale.
+
+\includegraphics{immagini/CFB2.png}
+
+\subsubsection{Counter Mode (CTR)}
+
+Sia \(e(\cdot)\) un cifrario a blocchi di dimensione \(b\); siano \(x_i\), \(y_i\)  stringhe di bit di lunghezza \(b\). La concatenazione de valore di inizializzazione \(IV\) e del contatore $CTR_i$ è definita come \(IV || CTR_i\) ed è una stringa di bit di lunghezza \(b\).
+
+\begin{align*}
+\textit{Cifratura :} \quad & y_i = e_k(IV||CTR_i) \oplus x_1, \quad i\geq 1 \\
+\textit{Decifratura :} \quad & x_i = e_k(IV || CTR_i) \oplus y_i, \quad i \geq 1
+\end{align*}
+
+\includegraphics{immagini/CTR.png}
+
+\paragraph{Sicurezza contro il riutilizzo del keystream} 
+La modalità \textbf{CTR (Counter Mode)} protegge contro il pericolo del \textit{two-time pad}, ovvero l'uso ripetuto dello stesso flusso di chiavi. Questo è possibile poiché ogni blocco del keystream è derivato da un contatore unico combinato con l'IV e cifrato.
+
+\subparagraph{Keystream deterministico ma unico} 
+Anche se il keystream è deterministico, l'uso di un IV sempre diverso garantisce che non venga mai riutilizzato con la stessa chiave, mantenendo così la sicurezza della cifratura.
+
+\subparagraph{Parallelizzazione} 
+La modalità CTR supporta pienamente la parallelizzazione delle operazioni di cifratura e decifratura. Poiché il keystream può essere calcolato indipendentemente per ciascun blocco, è possibile sfruttare sistemi multi-core per migliorare le prestazioni.
+
+\subparagraph{Confronto con CBC e CFB} 
+A differenza della modalità CBC, che richiede una dipendenza sequenziale tra blocchi, e CFB, che dipende dal ciphertext precedente, CTR non ha tali vincoli e consente elaborazioni simultanee.
+
+\subparagraph{Contatore}
+Il contatore usato nella modalità CTR serve per garantire l'unicità di ogni input alla cifratura. Può essere semplicemente incrementale oppure basato su meccanismi più complessi, come LFSR (Linear Feedback Shift Register).
+
+\subparagraph{Forma del contatore}
+Una scelta comune è \( \text{input}_i = \text{IV} \| \text{ctr}_i \), dove \texttt{ctr\_i} viene incrementato ad ogni blocco. Questo input viene poi cifrato con la chiave segreta per generare il keystream.
+
+\subparagraph{Espansione del ciphertext}
+La modalità CTR introduce una minima espansione del ciphertext: un solo blocco iniziale, che consiste in \( y_0 = \text{IV} \| \text{ctr}_0 \). Questo serve solo per inizializzare la generazione del keystream.
+
+\subparagraph{Nessuna segretezza richiesta}
+Il blocco \( \text{IV} \| \text{ctr}_0 \) può essere trasmesso in chiaro poiché non contiene informazioni sensibili. Tuttavia, è fondamentale che non venga mai riutilizzato con la stessa chiave.
+
+\subparagraph{Trasmissione sicura}
+Poiché la sicurezza della modalità CTR non dipende dalla segretezza dell’IV o del contatore iniziale, è pratica comune includere questi valori nel messaggio cifrato.
+
+\paragraph{CTR e sicurezza CPA}
+La modalità CTR è considerata \textbf{CPA-secure} (secure under Chosen Plaintext Attack), poiché il cifrario a blocchi sottostante agisce come una buona approssimazione di una permutazione pseudocasuale (PRP) o di una funzione pseudocasuale (PRF). Questo significa che la sequenza di output della forma:
+\[
+E_K(\text{IV} \| \text{ctr}_0 + 1),\; E_K(\text{IV} \| \text{ctr}_0 + 2),\; \ldots,\; E_K(\text{IV} \| \text{ctr}_0 + t)
+\]
+appare pseudocasuale agli occhi di un avversario, rendendo difficile qualsiasi tipo di analisi differenziale o predittiva.
+
+\paragraph{Rischio di two-time pad}
+Tuttavia, la modalità CTR può essere vulnerabile al problema del \textit{two-time pad} in specifiche condizioni:
+\begin{itemize}
+    \item Quando il contatore raggiunge il valore massimo e ritorna a zero (wrap-around), si rischia di riutilizzare gli stessi input a \( E_K \), compromettendo la sicurezza. È quindi fondamentale limitare il numero massimo di messaggi cifrabili con la stessa chiave.
+    \item Un'altra possibilità, anche se con probabilità esponenzialmente piccola, è che due coppie \((\text{IV}, \text{ctr}_0)\) e \((\text{IV}', \text{ctr}_0')\) producano lo stesso input a \( E_K \). Anche in questo caso, si rischia un two-time pad.
+\end{itemize}
+
+\paragraph{Analisi del two-time pad}
+Supponiamo che due messaggi siano cifrati usando lo stesso keystream \( S \). Otteniamo i ciphertext:
+\[
+\text{CT}_1 = \text{PT}_1 \oplus S \qquad \text{CT}_2 = \text{PT}_2 \oplus S
+\]
+Se l’avversario conosce una coppia \((\text{CT}_1, \text{PT}_1)\), può facilmente determinare il keystream:
+\[
+S = \text{PT}_1 \oplus \text{CT}_1
+\]
+A questo punto, può decifrare anche il secondo messaggio:
+\[
+\text{PT}_2 = \text{CT}_2 \oplus S = \text{CT}_2 \oplus (\text{PT}_1 \oplus \text{CT}_1)
+\]
+Questo mostra come il riutilizzo del keystream possa compromettere l'intera sicurezza del sistema.
+
+\paragraph{Limiti sul traffico cifrabile in CTR}
+Per evitare il wrap-around del contatore, è necessario imporre limiti rigorosi al traffico cifrabile con una singola chiave. Ad esempio, nel caso di \textbf{AES} con blocchi da 128 bit:
+\begin{itemize}
+    \item Supponiamo che \( |\text{IV}| = 96 \) bit e che il contatore sia lungo 32 bit.
+    \item In questo caso, il massimo numero di blocchi cifrabili è \( 2^{32} \), ciascuno da 128 bit (16 byte).
+    \item Il traffico massimo cifrabile risulta quindi:
+    \[
+    2^{32} \times 16\ \text{bytes} = 64\ \text{GBytes}
+    \]
+\end{itemize}
+Superare questo limite con la stessa chiave espone il sistema al rischio di collisioni nel keystream, e quindi ad attacchi crittografici.
+
+\subsubsection{Ciphertext Stealing (CTS) Mode}
+
+La modalità \textbf{Ciphertext Stealing (CTS)} consente di cifrare un testo in chiaro la cui lunghezza non è un multiplo esatto della dimensione del blocco, senza introdurre alcuna espansione del ciphertext.
+
+\begin{itemize}
+    \item \textbf{Obiettivo:} mantenere la dimensione del testo cifrato esattamente uguale a quella del testo in chiaro.
+    \item \textbf{Funzionamento:} CTS interviene solo sugli ultimi due blocchi di testo in chiaro.
+    \item \textbf{Intuizione:} una parte dell’ultimo blocco cifrato completo viene “rubata” (stealing) per completare il blocco finale parziale del plaintext.
+\end{itemize}
+
+In questo modo, il blocco finale cifrato mantiene la struttura corretta senza bisogno di padding esplicito, e il risultato cifrato ha la stessa lunghezza del testo originale.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./immagini/CTS_ECB.png}
+    \caption{CTS + ECB}
+   
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./immagini/CTS_CBC.png}
+    \caption{CTS + CBC}
+\end{figure}
+
+\subsubsection{Data Encryption Standard (DES)}
+
+Il \textit{Data Encryption Standard} (DES) è stato uno dei primi algoritmi crittografici moderni ad essere adottato come standard federale negli Stati Uniti, diventando un riferimento per la crittografia a chiave simmetrica per diversi decenni.
+
+Tutto ebbe inizio il 15 maggio 1973, quando il \textit{National Bureau of Standards} (NBS), oggi noto come NIST, pubblicò nel \textit{Federal Register} una richiesta pubblica di proposte per un sistema crittografico da standardizzare. Questo atto, apparentemente tecnico, fu in realtà piuttosto rivoluzionario, in quanto coinvolgeva per la prima volta la comunità accademica e industriale in un processo fino ad allora appannaggio esclusivo delle agenzie governative.
+
+Nel 1974, IBM rispose alla chiamata proponendo un algoritmo chiamato \textit{LUCIFER}, con blocchi di lunghezza $n = 64$ e chiave di $k = 128$ bit. Sotto la guida della \textit{National Security Agency} (NSA), LUCIFER venne modificato per diventare quello che conosciamo come DES, con una chiave ridotta a 56 bit ($k = 56$), mantenendo la lunghezza del blocco a 64 bit ($n = 64$). Questa nuova versione fu resa più resistente ad attacchi come la \textit{differential cryptanalysis}, benché i dettagli di queste modifiche e la loro motivazione siano stati a lungo oggetto di dibattito.
+
+Il 17 marzo 1975, il DES fu pubblicato nel \textit{Federal Register}, avviando una fase di consultazione pubblica e di analisi tecnica che culminò, il 15 gennaio 1977, con la sua adozione ufficiale come \textit{Federal Information Processing Standard} (FIPS PUB 46). L’algoritmo, rinominato \textit{DEA} (Data Encryption Algorithm), fu approvato per applicazioni “non classificate” ed è stato sottoposto a revisioni quinquennali, l’ultima delle quali avvenne nel gennaio 1994. Tuttavia, a causa della progressiva perdita di sicurezza dovuta all’aumento della potenza computazionale, il DES cessò di essere considerato uno standard a partire dal 1998.
+
+Nel 1999, con la pubblicazione del FIPS PUB 46-3, il DES fu raccomandato solo per sistemi legacy, mentre per nuovi progetti si suggerì l’uso del Triple DES (3DES). Infine, DES venne definitivamente rimpiazzato dall’AES (Advanced Encryption Standard), più sicuro ed efficiente.
+
+\paragraph{Confusion e Diffusion}
+
+Due concetti fondamentali introdotti da Claude Shannon per la costruzione di cifrari robusti sono \textbf{confusion} e \textbf{diffusion}. Entrambe sono proprietà desiderabili per rendere difficile l’analisi crittografica e garantire la sicurezza dell’algoritmo.
+
+\subparagraph{Diffusion}
+
+La \textit{diffusion} è un’operazione crittografica in cui l’influenza di un singolo simbolo del testo in chiaro (plaintext, PT) viene distribuita su molti simboli del testo cifrato (ciphertext, CT). L’obiettivo è nascondere le proprietà statistiche del plaintext, rendendo difficile per un attaccante inferire informazioni sulla struttura del messaggio originario.
+
+Un esempio semplice di elemento che fornisce diffusion è la permutazione. Il DES utilizza molte permutazioni nei suoi passaggi interni, mentre l’AES impiega un’operazione chiamata \texttt{MixColumns}, che garantisce una forte diffusione tra i byte.
+
+Una buona proprietà di diffusione può essere descritta informalmente così: cambiando un solo bit del plaintext, ci si aspetta che in media metà dei bit del ciphertext risultino diversi. In formule:
+\[
+\text{Se } PT \rightarrow PT' \quad \Rightarrow \quad CT \rightarrow CT' \text{ con } CT' \text{ statisticamente indipendente da } CT.
+\]
+
+\subparagraph{Confusion}
+
+La \textit{confusion}, invece, mira a nascondere la relazione tra la chiave crittografica e il testo cifrato. In pratica, si vuole che la dipendenza tra chiave e ciphertext sia così complessa da rendere difficile risalire alla chiave originale anche conoscendo il ciphertext.
+
+Un meccanismo comune per ottenere confusion è la sostituzione (substitution). Entrambi gli algoritmi DES e AES impiegano sostituzioni attraverso le cosiddette \textit{S-boxes} (substitution boxes), che mappano in modo non lineare un input in un output, contribuendo ad aumentare l'opacità del sistema.
+
+Insieme, confusion e diffusion sono gli elementi chiave per progettare cifrari resistenti agli attacchi crittanalitici.
+
+\subparagraph{Combinazione di confusion e diffusion}
+
+Utilizzare solo confusion o solo diffusion non è sufficiente per garantire la sicurezza di un cifrario. Ad esempio, cifrari come il \textit{Caesar shift} o la macchina \textit{Enigma} si basavano quasi esclusivamente su confusion, e si sono rivelati vulnerabili.
+
+Per costruire cifrari forti, è necessario concatenare confusion e diffusion in modo sistematico. I \textit{product ciphers} sono una famiglia di algoritmi costruiti proprio secondo questo principio: essi sono composti da più round, ognuno dei quali applica in sequenza operazioni di confusion e diffusion.
+
+Esempi noti includono:
+\begin{itemize}
+  \item DES: 16 round
+  \item 3DES: 48 round (3 volte DES)
+  \item AES-128: 10 round
+\end{itemize}
+
+Questa struttura a più round permette di amplificare l'effetto di entrambe le primitive, migliorando la sicurezza complessiva dell'algoritmo.
+    
+\paragraph{Feistel Network}
+
+La \textit{Feistel Network} è una struttura fondamentale per la costruzione di cifrari a blocchi invertibili. Data una famiglia di funzioni $f_1, \dots, f_d : \{0,1\}^n \rightarrow \{0,1\}^n$, l'obiettivo è costruire una funzione invertibile $F : \{0,1\}^{2n} \rightarrow \{0,1\}^{2n}$, anche nel caso in cui le singole $f_i$ non siano invertibili. Questa proprietà rende il modello di Feistel estremamente flessibile.
+
+La rete lavora dividendo un input di $2n$ bit in due metà: $L_0$ e $R_0$. In ogni round $i$, l’aggiornamento degli stati segue le seguenti regole:
+
+\[
+L_i = R_{i-1}
+\]
+\[
+R_i = L_{i-1} \oplus f_i(R_{i-1})
+\]
+
+Queste trasformazioni sono semplici ma potenti: ogni round applica una funzione non lineare all’input di destra e mescola il risultato con l’input di sinistra. La composizione di più round rafforza la sicurezza dell'intero cifrario.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{immagini/feistel_round_structure.png}
+\caption{Struttura di un singolo round della Feistel Network}
+\end{figure}
+
+\subparagraph{Round f-function}
+
+La funzione $f_i$ implementa entrambe le primitive fondamentali: \textbf{diffusion} e \textbf{confusion}. In pratica, questa funzione può essere vista come un generatore pseudocasuale che prende due input:
+\begin{enumerate}
+    \item La metà destra dell'input del round precedente ($R_{i-1}$)
+    \item La sottochiave del round $k_i$ (solitamente non mostrata nelle rappresentazioni grafiche)
+\end{enumerate}
+
+La qualità della funzione $f$ è cruciale per la sicurezza complessiva del cifrario. Più imprevedibile è il comportamento di $f$, maggiore è la resistenza agli attacchi crittanalitici.
+
+\subparagraph{Feistel net is invertible}
+
+\textbf{Teorema:} Per ogni famiglia di funzioni $f_1, \dots, f_d : \{0,1\}^n \rightarrow \{0,1\}^n$, la rete di Feistel $F : \{0,1\}^{2n} \rightarrow \{0,1\}^{2n}$ è sempre invertibile.
+
+\textbf{Dimostrazione:} È sufficiente costruire esplicitamente l'inverso. Dato:
+
+\[
+R_i = L_{i-1} \oplus f_i(R_{i-1})
+\quad \text{e} \quad
+L_i = R_{i-1}
+\]
+
+Si ottiene:
+
+\[
+R_{i-1} = L_i
+\quad \text{e} \quad
+L_{i-1} = R_i \oplus f_i(L_i)
+\]
+
+In questo modo si può risalire all’input originale da un output arbitrario, semplicemente applicando le stesse operazioni in ordine inverso.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.1\textwidth]{immagini/feistel_inverse.png}
+\caption{Schema di decifratura di una Feistel Network}
+\end{figure}
+
+\paragraph{Decryption circuit}
+
+L’inversione della Feistel Network richiede lo stesso circuito della cifratura, con la sola differenza che le funzioni $f_1, \dots, f_d$ vengono applicate in ordine inverso: da $f_d$ a $f_1$.
+
+Questa caratteristica rende la Feistel Network particolarmente utile nella pratica, perché consente di utilizzare lo stesso hardware (o software) per cifrare e decifrare, risparmiando risorse.
+
+In conclusione, la Feistel Network è una metodologia generale per costruire funzioni invertibili (cifrari a blocchi) anche partendo da funzioni arbitrarie e non invertibili.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{./immagini/des_internal_structure.png}
+\caption{Struttura interna del DES basata su rete di Feistel}
+\end{figure}
+
+\subparagraph{Initial and final permutation}
+
+Nel DES sono presenti due permutazioni: l’\textbf{Initial Permutation} (IP) e la sua inversa $\text{IP}^{-1}$. Queste permutazioni non aggiungono sicurezza all’algoritmo: il loro scopo preciso non è mai stato ufficialmente chiarito. Tuttavia, sono estremamente efficienti da implementare in hardware e probabilmente servivano ad allineare i dati nei registri per l'elaborazione.
+
+\subparagraph{The f-function}
+
+La funzione $f$ del DES è composta da tre componenti principali:
+\begin{itemize}
+    \item \textbf{Expansion box (E)}: aumenta la diffusione estendendo il blocco da 32 a 48 bit.
+    \item \textbf{S-boxes}: realizzano la confusion mappando blocchi di 6 bit in output di 4 bit in modo non lineare.
+    \item \textbf{Permutation (P)}: rimescola i bit in uscita dalle S-box per aumentare ulteriormente la diffusione.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{./immagini/des_f_function.png}
+\caption{Struttura della funzione $f$ nel DES}
+\end{figure}
+
+\paragraph{S-box}
+
+Le \textbf{S-box} (substitution boxes) rappresentano il cuore della sicurezza del DES. Esse introducono \textit{confusion}, ovvero rendono complessa la relazione tra la chiave e il testo cifrato, mascherando eventuali pattern prevedibili. Nonostante la loro importanza, le motivazioni dettagliate dietro il loro design originale non furono mai rese pubbliche ufficialmente, il che ha alimentato sospetti e teorie riguardo l'intervento dell’NSA durante lo sviluppo del DES.
+
+Ogni S-box è una semplice \textit{lookup table} che mappa un input di 6 bit in un output di 4 bit, ovvero $S : \{0,1\}^6 \rightarrow \{0,1\}^4$. All’epoca della progettazione del DES, tabelle più grandi sarebbero state preferibili dal punto di vista della sicurezza, ma le limitazioni hardware dei circuiti integrati negli anni ’70 resero le tabelle 6x4 un compromesso accettabile.
+
+Le S-box costituiscono l’unico elemento non lineare dell’intero sistema. Questo è un dettaglio cruciale: se le S-box fossero lineari (cioè se $S(a \oplus b) = S(a) \oplus S(b)$), l’intero cifrario DES potrebbe essere modellato come un sistema lineare in cui i bit della chiave sono le incognite. Questo renderebbe il DES vulnerabile ad attacchi come il \textit{known plaintext attack} (KPA), che lo renderebbe facilmente risolvibile.
+
+\subparagraph{S-boxes}
+
+L’indicizzazione all’interno di una S-box avviene secondo una convenzione specifica. L’input di 6 bit viene denotato come $x = b_1 b_2 b_3 b_4 b_5 b_6$, dove:
+\begin{itemize}
+    \item I bit esterni $b_1$ e $b_6$ determinano la \textbf{riga} della tabella.
+    \item I bit interni $b_2 b_3 b_4 b_5$ determinano la \textbf{colonna}.
+\end{itemize}
+Ad esempio, nel caso della quinta S-box, se l’input è $011011$, allora la riga sarà determinata da $01$ e la colonna da $1101$, il che porta all’output $1001$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{immagini/sbox_example.png}
+\caption{Esempio di computazione di una S-box: $S_5(011011) = 1001$}
+\end{figure}
+
+\subparagraph{The f function criteria}
+
+La funzione $f$ è il cuore operativo del DES, responsabile della diffusione e confusione. Per garantire un alto livello di sicurezza, $f$ deve essere \textit{fortemente non lineare}. Le due proprietà principali che questa funzione deve soddisfare sono:
+
+\begin{itemize}
+    \item \textbf{Strict Avalanche Criterion (SAC)}: una singola modifica a un bit dell’input dovrebbe cambiare ogni bit dell’output con probabilità 0.5.
+    \item \textbf{Bit Independence Criterion (BIC)}: i cambiamenti nei singoli bit dell’input devono produrre cambiamenti indipendenti nei bit dell’output.
+\end{itemize}
+
+\paragraph{S-box criteria}
+
+Il design delle S-box è stato attentamente calibrato per soddisfare criteri molto specifici, tra cui:
+
+\begin{itemize}
+    \item Ogni S-box ha 6 bit di input e 4 bit di output.
+    \item Nessun bit di output deve essere troppo vicino a una combinazione lineare dei bit di input.
+    \item Se i bit più esterni dell’input sono fissi e i quattro centrali variano, ogni possibile valore di output a 4 bit deve apparire una sola volta.
+    \item Due input che differiscono in un solo bit devono produrre output che differiscono almeno in due bit.
+    \item Due input che differiscono nei primi due bit e sono uguali negli ultimi due devono dare output diversi.
+    \item Per ogni differenza non nulla nei 6 bit di input, non più di 8 coppie su 32 possono generare la stessa differenza di output.
+    \item Collisioni (differenze di output nulle) su tutti e 32 i bit in uscita dalle 8 S-box sono ammesse solo se avvengono in al massimo 3 S-box adiacenti.
+\end{itemize}
+
+Questi criteri mirano a prevenire la costruzione di tabelle differenziali prevedibili, aumentando la resistenza del DES agli attacchi differenziali e lineari.
+
+\subparagraph{Avalanche effect}
+
+Il cosiddetto \textit{effetto valanga} è una proprietà desiderabile nei cifrari moderni. L’idea è che un piccolo cambiamento nel plaintext o nella chiave (anche solo un singolo bit) debba provocare un cambiamento significativo nel ciphertext.
+
+Nel caso del DES:
+\begin{itemize}
+    \item Dopo solo 5 round, ogni bit dell’output dipende da ogni bit del plaintext e della chiave.
+    \item Due plaintext che differiscono per un singolo bit, usando la stessa chiave, generano ciphertext che differiscono in media per 32 bit.
+    \item Due chiavi che differiscono per un singolo bit, usando lo stesso plaintext, generano ciphertext che differiscono anch’essi in media per 32 bit.
+\end{itemize}
+
+Questo comportamento aiuta a mascherare completamente ogni correlazione tra plaintext, chiave e ciphertext, rafforzando la sicurezza contro ogni attacco statistico.
+
+\paragraph{Key Scheduling}
+
+Il \textit{key schedule} del DES è un meccanismo progettato per generare 16 chiavi di round diverse a partire da una singola chiave di 64 bit (di cui solo 56 effettivamente utilizzati). Due permutazioni fondamentali, chiamate \textbf{PC-1} e \textbf{PC-2}, assicurano che ad ogni round venga selezionato un sottoinsieme differente dei bit della chiave.
+
+Una caratteristica chiave del key schedule è che ogni bit della chiave originale partecipa, in media, a circa 14 round su 16. Questo aumenta l'efficacia della diffusione attraverso la cifratura.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{immagini/key_schedule.png}
+\caption{Schema del key scheduling nel DES}
+\end{figure}
+
+\subparagraph{Facts on key schedule}
+
+Il key schedule è un metodo sistematico per generare 16 permutazioni chiave, una per ciascun round. È progettato per essere facilmente implementabile in hardware, il che era cruciale negli anni '70. Ogni round key è una selezione di 48 bit, ottenuta tramite la permutazione PC-2 su una concatenazione di due registri (C e D) derivati dalla chiave iniziale.
+
+Questi registri sono soggetti a rotazioni cicliche (1 o 2 bit per round), per un totale di:
+\[ 4 + 12 \times 2 = 28 \text{ rotazioni} \]
+Al termine del processo, si ha che:
+\[ C_0 = C_{16}, \quad D_0 = D_{16} \]
+Tale simmetria è fondamentale per l’algoritmo di decifratura, che riutilizza lo stesso circuito del cifrario, ma in ordine inverso.
+
+\paragraph{DES in practice}
+
+Il DES è stato progettato per essere altamente efficiente sia in hardware che in software. Le operazioni aritmetiche coinvolte si riducono principalmente all’operazione \texttt{XOR}, mentre permutazioni (come IP, IP$^{-1}$, E, P) e S-box possono essere implementate tramite tabelle di lookup in software o tramite cablaggi fisici nei circuiti hardware.
+
+Una delle applicazioni più rilevanti del DES è stata nel settore bancario, dove è stato largamente usato per cifrare PIN e transazioni su ATM. È stato anche impiegato in ambito governativo e in comunicazioni interbancarie.
+
+\paragraph{Empirical properties of DES}
+
+Empiricamente, il DES mostra proprietà molto favorevoli per un cifrario:
+
+\begin{itemize}
+    \item Ogni bit del ciphertext dipende da tutti i bit del plaintext e della chiave.
+    \item Non esistono relazioni statistiche evidenti tra plaintext e ciphertext.
+    \item Una singola variazione di un bit nel plaintext (o nel ciphertext) cambia, con probabilità circa 0.5, ogni bit del ciphertext (o plaintext).
+\end{itemize}
+
+Queste proprietà derivano principalmente dal buon uso della confusione e diffusione.
+
+\paragraph{DES is not a group}
+
+Una proprietà fondamentale di un cifrario per evitare determinati attacchi è che esso non formi un gruppo rispetto alla composizione delle cifrature. Ovvero, non devono esistere chiavi $K_1, K_2$ tali che:
+\[
+\text{DES}_{K_1} \circ \text{DES}_{K_2} = \text{DES}_{K_3}
+\]
+per qualche $K_3$.
+
+Nel 1992, Campbell e Wiener dimostrarono formalmente che DES non forma un gruppo. Ciò fu preceduto da forte evidenza sperimentale: considerando che DES produce al massimo $2^{56} \ll 2^{64}!$ permutazioni possibili, è molto improbabile che la composizione di due DES ricada ancora all’interno dell’insieme delle cifrature DES.
+
+\paragraph{Security of DES}
+
+La sicurezza del DES può essere compromessa da due categorie di attacchi:
+
+\begin{itemize}
+    \item \textbf{Attacchi esaustivi (brute-force)}: richiedono provare tutte le $2^{56}$ chiavi possibili.
+    \item \textbf{Attacchi analitici}:
+    \begin{itemize}
+        \item \textit{Differential Cryptanalysis} (Biham e Shamir, 1990)
+        \item \textit{Linear Cryptanalysis} (Matsui, 1993)
+    \end{itemize}
+\end{itemize}
+
+Tali attacchi sfruttano proprietà delle S-box e possono essere applicati a qualunque block cipher. Tuttavia, nel caso del DES, non sono praticabili senza disporre di un gran numero di coppie plaintext-ciphertext, la cui raccolta richiede tempo e memoria. Inoltre, recuperano una sola chiave, rendendo efficace la strategia di key refresh periodico.
+
+\paragraph{Performance of DES}
+
+\textbf{Implementazioni software:}
+\begin{itemize}
+    \item Adatte per dispositivi dai desktop alle smart card.
+    \item Le permutazioni di bit (E, P, IP) sono inefficienti in software.
+    \item Le S-box sono di efficienza moderata.
+    \item Possibili ottimizzazioni tramite precomputazione.
+    \item \textbf{Throughput}: fino a 100 Mbps.
+\end{itemize}
+
+\textbf{Implementazioni hardware:}
+\begin{itemize}
+    \item Le permutazioni sono altamente efficienti.
+    \item Le S-box possono essere implementate con circa 100 porte logiche ciascuna.
+    \item Il DES intero può essere realizzato con meno di 3000 porte, rendendolo adatto a RFID e dispositivi embedded.
+    \item Ottimizzazioni con pipelining, FPGA, ASIC.
+    \item \textbf{Throughput}: fino a 100 Gbps.
+\end{itemize}
+
+\subsubsection{Advanced Encryption Standard(AES)}
+\paragraph{AES History}
+
+La storia dell'AES (Advanced Encryption Standard) inizia nel 1997, quando il NIST (National Institute of Standards and Technology) lanciò una richiesta pubblica per la progettazione di un nuovo algoritmo di cifratura simmetrica. L'obiettivo era sostituire il DES, ormai considerato insicuro a causa della sua lunghezza di chiave troppo breve.
+
+Nel 1998 furono presentate 15 proposte da gruppi di crittografi di tutto il mondo. Dopo un'accurata analisi tecnica e pubblica, nel 1999 il NIST selezionò cinque finalisti: Mars, RC6, Rijndael, Serpent e Twofish.
+
+Nel 2000, il NIST annunciò la selezione di \textbf{Rijndael} come vincitore e nuovo standard AES. I motivi principali della scelta furono la sua efficienza in hardware e software, la sicurezza dimostrata, e la flessibilità nelle dimensioni delle chiavi. AES supporta tre lunghezze di chiave: 128, 192 e 256 bit. Maggiore è la chiave, maggiore è la sicurezza offerta, ma anche più elevato il costo computazionale.
+
+AES opera sempre su blocchi di 128 bit. Nel 2003, l'Agenzia per la Sicurezza Nazionale statunitense (NSA) approvò l’uso dell’AES anche per documenti classificati. Per il livello \textit{SECRET} è permesso l’uso di tutte le lunghezze di chiave; per il livello \textit{TOP SECRET}, invece, è richiesto l’uso di chiavi a 256 o 512 bit. È stato il primo algoritmo pubblico a ricevere una simile approvazione.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{./immagini/overview.png}
+\caption{overview}
+\end{figure}
+
+\paragraph{Introduction}
+
+AES è un cifrario a blocchi moderno basato su round, ma a differenza del DES, non utilizza una struttura di tipo Feistel. In ogni round, AES cifra l'intero blocco, e non solo metà, come fa il DES. Questo permette ad AES di richiedere meno round complessivi rispetto al DES, pur mantenendo (e superando) lo stesso livello di sicurezza.
+
+Il percorso dei dati durante la cifratura viene chiamato \textit{state} ed è rappresentato come una matrice 4x4 di byte. Ogni colonna contiene 4 byte e corrisponde a una porzione del blocco di dati.
+
+\paragraph{Round and Layers}
+
+Ogni round dell’AES (eccetto l’ultimo) è composto da quattro trasformazioni distinte, ognuna con uno scopo preciso nella sicurezza del cifrario:
+
+\begin{enumerate}
+    \item \textbf{AddRoundKey}: i dati vengono combinati con la chiave di round tramite XOR.
+    \item \textbf{SubBytes}: applica una sostituzione non lineare byte per byte usando le S-box — questa fase fornisce confusione.
+    \item \textbf{ShiftRows}: ogni riga della matrice dello state viene ruotata verso sinistra di un certo numero di posizioni — contribuisce alla diffusione.
+    \item \textbf{MixColumns}: mescola ciascuna colonna della matrice attraverso una trasformazione lineare in un campo finito — aumenta ulteriormente la diffusione.
+\end{enumerate}
+
+Il round finale omette la trasformazione MixColumns.
+
+Le operazioni di MixColumns e SubBytes si basano su strutture algebriche ben precise: i \textbf{campi di Galois}.
+
+\paragraph{Mathematical Setting}
+
+Tutte le operazioni critiche in AES si svolgono nel campo finito $\text{GF}(2^8)$. In questo contesto, ogni byte viene visto come un polinomio di grado massimo 7 con coefficienti binari ($0$ o $1$), cioè un elemento del tipo:
+\[
+A(x) = a_7x^7 + a_6x^6 + \dots + a_1x + a_0
+\]
+dove $a_i \in \text{GF}(2)$.
+
+Poiché AES lavora con operazioni su byte, e ciascun byte è rappresentabile come polinomio su $\text{GF}(2)$, le operazioni aritmetiche coinvolte non sono quelle sugli interi, ma quelle sui polinomi: somma, moltiplicazione, divisione e riduzione modulo un polinomio irriducibile.
+
+Per esempio, nella trasformazione MixColumns, si effettua la moltiplicazione tra colonne e matrici con riduzione modulo il polinomio:
+\[
+P(x) = x^8 + x^4 + x^3 + x + 1
+\]
+
+Questa operazione garantisce che i risultati restino sempre nello stesso campo finito, e fornisce un’ottima diffusione dei bit. La divisione, invece, è necessaria per l’inversione dei byte durante SubBytes, e in AES viene ottimizzata tramite tabelle di lookup.
+
+\paragraph{Polynomial Arithmetic}
+
+Nel contesto di $\text{GF}(2^8)$, le operazioni di base includono:
+
+\begin{itemize}
+    \item \textbf{Somma e sottrazione}: si effettuano con XOR, essendo $\text{GF}(2)$.
+    \item \textbf{Moltiplicazione}: usata in MixColumns, comporta moltiplicazione di polinomi con riduzione modulo $P(x)$.
+    \item \textbf{Inversione}: usata per generare le S-box, ovvero $A(x) \cdot A(x)^{-1} \equiv 1 \mod P(x)$.
+\end{itemize}
+
+L’inversione è particolarmente costosa, ma poiché il campo contiene solo $2^8 = 256$ elementi, è possibile precomputare tutte le inversioni e memorizzarle in una tabella (lookup table), rendendo l’operazione istantanea in fase di cifratura.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{./immagini/subperm.png}
+    \caption{Subs-Perms Network non una Feistel Network}
+    \end{figure}
+    
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./immagini/schema_128.png}
+    \caption{Schema AES 128}
+    \end{figure}
+\paragraph{AES Round Transformations}
+
+L'AES è un cifrario a blocchi strutturato in una sequenza di round, ognuno dei quali trasforma lo \textit{state} (una matrice 4x4 di byte) mediante quattro operazioni principali. Tutte queste trasformazioni sono progettate per garantire un’elevata sicurezza crittografica, combinando confusione, diffusione e dipendenza dalla chiave.
+
+\begin{enumerate}
+    \item \textbf{AddRoundKey}: questa è la prima e l'ultima trasformazione di ogni round. Lo state viene combinato con la chiave del round corrente tramite operazione XOR. Poiché è una trasformazione lineare, da sola non garantisce sicurezza, ma è fondamentale per introdurre la dipendenza dalla chiave.
+    
+    \item \textbf{SubBytes}: ogni byte dello state è sostituito da un altro byte secondo una S-box non lineare, costruita tramite l'inversione in $\text{GF}(2^8)$ seguita da una trasformazione affine. Questa operazione introduce non linearità nel cifrario, realizzando l'effetto di \textit{confusione} secondo la terminologia di Shannon.
+
+    \item \textbf{ShiftRows}: le righe della matrice dello state vengono ruotate verso sinistra di un numero crescente di posizioni. La prima riga resta invariata, la seconda è ruotata di una posizione, la terza di due e la quarta di tre. Questo passaggio contribuisce a mescolare i dati tra le colonne, aumentando la diffusione.
+
+    \item \textbf{MixColumns}: ogni colonna dello state viene trasformata in una nuova colonna tramite una moltiplicazione per una matrice fissa in $\text{GF}(2^8)$. Questa trasformazione diffonde l'informazione tra i byte di ciascuna colonna, ed è essenziale per garantire che ogni output dipenda da ogni input.
+\end{enumerate}
+
+L’ultimo round omette la trasformazione \textit{MixColumns}, per ragioni di simmetria nell’inversione del cifrario.
+
+
+
+\paragraph{AES Security}
+
+Attualmente non si conoscono attacchi analitici contro AES che siano più efficienti della ricerca esaustiva (brute-force). Questo significa che, in termini pratici, la sicurezza di AES è ancora molto solida.
+
+\subparagraph{Best Known Attacks}
+
+Nonostante la sua resistenza dimostrata, esistono attacchi teorici con complessità leggermente inferiori rispetto alla brute-force, ma nessuno di questi è praticabile su scala reale:
+
+\begin{itemize}
+    \item L’attacco di \textit{key recovery} più efficiente permette, per AES-128, di ridurre la complessità effettiva della chiave da 128 bit a 126 bit. Questo è solo quattro volte meglio della ricerca esaustiva e non rappresenta una minaccia concreta.
+    \item Per AES-256, esiste un attacco noto come \textit{related-key attack}. Dato un numero molto grande (circa $2^{99}$) di coppie plaintext-ciphertext generate da quattro chiavi correlate, è possibile recuperare la chiave. Tuttavia, queste chiavi correlate devono essere costruite artificialmente — non è possibile che si generino casualmente.
+\end{itemize}
+
+\paragraph{Performance}
+
+AES è progettato per essere efficiente sia in software sia in hardware.
+
+\subparagraph{Software Implementation}
+\begin{itemize}
+    \item L'implementazione diretta è particolarmente adatta a microprocessori a 8 bit, come quelli utilizzati nelle smartcard, dove ogni istruzione lavora su un byte.
+    \item Per architetture a 32 o 64 bit, si utilizza spesso un’ottimizzazione detta \textbf{T-box}: si precomputano le combinazioni delle trasformazioni di round (esclusa l’AddRoundKey) in tabelle di lookup.
+    \item Queste tabelle (quattro, una per ciascun byte) contengono 256 voci di 32 bit. Con 16 look-up per round, si ottengono prestazioni dell’ordine di centinaia di Megabit al secondo.
+\end{itemize}
+
+\subparagraph{Hardware Implementation}
+\begin{itemize}
+    \item L’AES richiede più risorse hardware rispetto al DES, ma offre throughput decisamente superiori.
+    \item In implementazioni ASIC o FPGA ottimizzate, AES può raggiungere velocità di 10 Gigabit/s.
+    \item La cifratura a blocchi risulta estremamente veloce se comparata ad algoritmi asimmetrici (come RSA), algoritmi di compressione, o operazioni di signal processing.
+\end{itemize}
+
+Per approfondimenti sulle performance e ottimizzazioni AES, si può fare riferimento all’AES Lounge, un progetto dedicato all’analisi dell’efficienza e sicurezza del cifrario.
+
+\subsubsection{XTS-AES Mode for Block-Oriented Storage Devices}
+
+\paragraph{Standardizzazione e contesto}
+
+XTS-AES è un modo operativo del cifrario AES progettato specificamente per la cifratura di dispositivi di memorizzazione a blocchi, come hard disk o SSD. È stato standardizzato come IEEE Std 1619-2007 e approvato da NIST nel 2010 come modalità ufficiale di cifratura per la protezione della riservatezza dei dati "at rest". Questo standard nasce per affrontare scenari in cui un avversario può avere accesso diretto al contenuto cifrato, come nel caso di un furto fisico di un dispositivo.
+
+\paragraph{Implementazioni}
+
+XTS-AES è stato ampiamente adottato sia in software che in hardware:
+\begin{itemize}
+    \item \textbf{Software}: implementazioni includono \textit{BestCrypt}, \textit{dm-crypt}, \textit{TrueCrypt}, \textit{FreeBSD/OpenBSD}, FileVault (macOS), e BitLocker (Windows 10).
+    \item \textbf{Hardware}: utilizzato in dispositivi di sicurezza fisica come SPYRUS Hydra PC e Kingston DataTraveler 5000.
+\end{itemize}
+
+\paragraph{Assunzioni sul modello}
+
+Il modello d’uso assume un dispositivo organizzato in settori, tipicamente di 512 byte. Ogni settore rappresenta l’unità minima di lettura e scrittura, ed è ulteriormente suddivisibile in blocchi AES da 128 bit. La cifratura:
+\begin{itemize}
+    \item Non deve sprecare spazio.
+    \item Deve dipendere solo da: il plaintext, la chiave, il numero di settore e il numero di blocco.
+\end{itemize}
+
+\paragraph{Requisiti della cifratura di dati a riposo}
+
+I dati a riposo richiedono proprietà specifiche, diverse dalla cifratura dei dati in transito:
+\begin{enumerate}
+    \item Il ciphertext può essere liberamente letto da un attaccante.
+    \item I dati cifrati devono avere la stessa dimensione dei dati in chiaro (in-place encryption).
+    \item Ogni blocco deve essere accessibile indipendentemente.
+    \item La cifratura opera in blocchi AES da 128 bit.
+    \item Non devono esserci metadati aggiuntivi, salvo la posizione dei dati.
+    \item Lo stesso plaintext produce ciphertext diversi in posizioni diverse, ma lo stesso ciphertext se riscritto nella stessa posizione.
+    \item Deve essere possibile la decifratura da dispositivi conformi allo stesso standard.
+\end{enumerate}
+
+\paragraph{Perché altri modi operativi non vanno bene}
+
+\subparagraph{CTR}
+CTR, sebbene efficiente, è inadeguato per l’uso su dischi perché:
+\begin{itemize}
+    \item È \textbf{malleabile}, quindi vulnerabile a manipolazioni.
+    \item Richiede un IV non deterministico: usare un IV fisso (come il numero del settore) compromette la sicurezza tra più scritture (\textit{Two-Time Pad}). Un IV casuale invece richiederebbe spazio extra per memorizzarlo, incompatibile con la cifratura in-place.
+\end{itemize}
+
+\subparagraph{CBC}
+CBC, con IV derivato dalla posizione, fallisce perché:
+\begin{itemize}
+    \item Solo il primo blocco dipende dalla posizione.
+    \item Permette lo \textit{sector swapping}: è possibile copiare un settore cifrato in un altro, mantenendo la validità.
+    \item È anch’esso \textbf{malleabile}, e la dipendenza tra blocchi impedisce l’accesso casuale ai dati.
+\end{itemize}
+
+\subparagraph{ECB e GCM}
+\begin{itemize}
+    \item ECB rivela pattern nei dati — totalmente inadeguato per dischi.
+    \item GCM è sicuro ma genera tag e nonce → \textbf{espansione dati}, quindi inadatto alla cifratura in-place.
+\end{itemize}
+
+\paragraph{Struttura di XTS-AES}
+
+XTS-AES combina due elementi chiave:
+
+\begin{itemize}
+    \item \textbf{Tweakable Block Cipher}, costruito secondo lo schema XEX (XOR-Encrypt-XOR), che consente di associare ogni blocco alla sua posizione fisica senza necessità di IV esterni.
+    \item \textbf{CTS} (Ciphertext Stealing): tecnica usata per cifrare l’ultimo blocco quando non è di lunghezza piena (non multiplo di 16 byte), evitando padding e mantenendo la dimensione del dato cifrato.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.65\textwidth]{immagini/tweakable_bloch cipher.png}
+\caption{Tweakable Block Cipher: Il tweak $t$ è pubblico e serve a introdurre variabilità nell'encryption, mentre la chiave segreta $k$ fornisce la sicurezza crittografica del sistema.}
+
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{immagini/XEX.png}
+\caption{XEX: lo schema XOR-Encrypt-XOR che rende il cifrario "tweakable"}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\textwidth]{immagini/blockencryption.png}
+\caption{La cifratura e decifratura si basano sull'AES. Il tweak è costituito dalla coppia $(i, j)$, dove $i$ identifica il settore e $j$ il blocco all'interno del settore. La moltiplicazione $\otimes$ è effettuata nel campo finito $\mathrm{GF}(2^{128})$ modulo $x^{128} + x^7 + x^2 + x + 1$. Il generatore $a$ è un polinomio primitivo di $\mathrm{GF}(2^{128})$ e le potenze $a^j$ possono essere precomputate. La cifratura di un settore di $n$ blocchi richiede $n+1$ invocazioni di AES.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{immagini/blockdecryption.png}
+\caption{Block Decryption}
+\end{figure}
+
+\subsection{Padding}
+\subsubsection{Padding nei cifrari a blocchi}
+
+Il padding è necessario quando la lunghezza del plaintext (PT) non è un multiplo intero della dimensione del blocco del cifrario. In questi casi, è necessario completare il messaggio per cifrarlo correttamente.
+
+\paragraph{Motivazione}
+\begin{itemize}
+    \item I cifrari a blocchi come AES operano su blocchi fissi di $n$ byte (tipicamente $n=8$ o $n=16$).
+    \item Se la lunghezza del messaggio non è multiplo di $n$, occorre completare l’ultimo blocco.
+    \item Il padding garantisce che la decifratura possa ripristinare l’esatto contenuto del messaggio originario.
+\end{itemize}
+
+\paragraph{Una soluzione ingenua (e sbagliata)}
+
+Una soluzione apparentemente semplice consiste nell'aggiungere byte di valore \texttt{0x00} fino al completamento del blocco.
+
+\subparagraph{Problema}
+\begin{itemize}
+    \item Se il messaggio originale termina già con uno o più zeri, non si può distinguere tra zeri reali e zeri di padding.
+    \item Questo rende la decifratura ambigua.
+    \item \textbf{Esempio}: se il messaggio è una stringa terminata con \texttt{NULL}, come si distingue una stringa di 7 byte da una con padding?
+\end{itemize}
+
+\paragraph{Lo schema di padding PKCS \#5}
+
+\subparagraph{Descrizione}
+\begin{itemize}
+    \item È uno schema standardizzato per blocchi di 8 byte (PKCS\#5) o blocchi generici (PKCS\#7).
+    \item Se la lunghezza del messaggio non è multipla del blocco:
+    \begin{itemize}
+        \item Si calcola il numero di byte mancanti, $b = L - (\text{len(PT)} \mod L)$.
+        \item Si aggiungono $b$ byte, ciascuno con valore $b$.
+        \item \textbf{Esempio}: se $b = 3$, si aggiunge \texttt{0x03 0x03 0x03}.
+    \end{itemize}
+    \item Se la lunghezza del messaggio \emph{è} un multiplo del blocco:
+    \begin{itemize}
+        \item Si aggiunge un intero blocco di padding.
+        \item Ogni byte ha valore pari alla dimensione del blocco $L$.
+        \item \textbf{Esempio}: con blocchi da 8 byte, si aggiunge \texttt{0x08 0x08 0x08 0x08 0x08 0x08 0x08 0x08}.
+    \end{itemize}
+\end{itemize}
+
+\subparagraph{Decryption}
+\begin{itemize}
+    \item Dopo la decifratura, si guarda il valore dell’ultimo byte: $b$.
+    \item Se $b = 0$ o $b > L$, si segnala errore.
+    \item Se gli ultimi $b$ byte non sono tutti uguali a $b$, si segnala errore.
+    \item Altrimenti, si eliminano gli ultimi $b$ byte per ottenere il messaggio originale.
+\end{itemize}
+
+\paragraph{PKCS \#5 vs PKCS \#7}
+
+\begin{itemize}
+    \item \textbf{PKCS \#5} è definito solo per cifrari con blocchi da 8 byte (come DES). È formalizzato in RFC 2898.
+    \item \textbf{PKCS \#7} estende lo schema a qualsiasi dimensione di blocco da 1 a 255 byte. È formalizzato in RFC 2315.
+\end{itemize}
+
+\paragraph{Espansione del messaggio cifrato}
+
+Il padding introduce un'espansione nel messaggio cifrato:
+\begin{itemize}
+    \item Il messaggio cifrato sarà sempre un multiplo della dimensione del blocco.
+    \item Il messaggio può aumentare fino a un intero blocco in più rispetto al plaintext.
+\end{itemize}
+
+\subsubsection{Padding Oracle Attack (CCA)}
+
+Il \textbf{Padding Oracle Attack} è un attacco di tipo \emph{Chosen Ciphertext Attack} (CCA), che sfrutta la gestione degli errori di padding da parte del ricevente per ricostruire il plaintext a partire dal ciphertext. È particolarmente efficace contro cifrari a blocchi in modalità CBC con padding standard come PKCS\#5 o PKCS\#7.
+
+\paragraph{Scenario dell'attacco}
+\begin{itemize}
+    \item L'attaccante intercetta un ciphertext $y$ e vuole risalire al plaintext $x$ (attacco ciphertext-only).
+    \item Modifica il ciphertext originale $y$ ottenendo una versione alterata $y'$.
+    \item $y'$ viene inviato a un \textbf{padding oracle}, ovvero il ricevente che:
+    \begin{itemize}
+        \item Decripta $y'$.
+        \item Controlla la correttezza del padding.
+        \item Risponde (esplicitamente o indirettamente) in base all’esito del padding.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Il Padding Oracle}
+\begin{itemize}
+    \item È un’entità (tipicamente una web application) che rivela, attraverso:
+    \begin{itemize}
+        \item messaggi di errore,
+        \item tempi di risposta diversi,
+        \item comportamenti differenti nel protocollo,
+    \end{itemize}
+    se il padding del plaintext decrittato è valido o meno.
+    \item Queste informazioni sono sufficienti per consentire all’attaccante di decifrare il messaggio, byte per byte.
+\end{itemize}
+
+\paragraph{Idea base dell'attacco}
+\begin{itemize}
+    \item Si considera un ciphertext composto da due blocchi $(IV, y)$.
+    \item Sappiamo che nella modalità CBC:
+    \[
+    x = D_k(y) \oplus IV
+    \]
+    \item L’intuizione fondamentale:
+    \begin{itemize}
+        \item Se l’attaccante modifica l’$i$-esimo byte dell’IV,
+        \item allora solo l’$i$-esimo byte del plaintext $x$ cambia in modo prevedibile.
+        \item Questo permette di testare valori finché il padding risulta valido.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Sfruttamento del padding}
+\begin{itemize}
+    \item Il padding PKCS\#5/7 consente di verificare se l’ultimo byte (o gli ultimi $b$ byte) del plaintext hanno valore corretto.
+    \item Confrontando la risposta del padding oracle a diverse manipolazioni, l’attaccante deduce i byte originali del plaintext.
+    \item L’attacco procede iterativamente, decifrando un byte alla volta.
+\end{itemize}
+
+\paragraph{Implicazioni di sicurezza}
+\begin{itemize}
+    \item Questo tipo di attacco ha avuto forte impatto in vari contesti:
+    \begin{itemize}
+        \item TLS (es. attacco POODLE),
+        \item Web applications,
+        \item API REST che forniscono feedback sui messaggi criptati.
+    \end{itemize}
+    \item Dimostra l’importanza di:
+    \begin{itemize}
+        \item non rivelare dettagli sugli errori di decrittazione,
+        \item utilizzare cifrature con autenticazione (es. AES-GCM).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Strutture visive consigliate}
+
+\begin{itemize}
+    \item \textbf{Immagine 1:} Schema CBC con IV, y e padding finale evidenziato.
+    \item \textbf{Immagine 2:} Diagramma dell’interazione attaccante $\rightarrow$ oracle $\rightarrow$ risposta.
+    \item \textbf{Immagine 3:} Effetto del cambiamento di un byte dell’IV sul plaintext.
+    \item \textbf{Immagine 4:} Esempio iterativo del recupero del plaintext byte-per-byte.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.45\textwidth]{immagini/step1.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{immagini/step2.png}
+    
+    \vspace{0.5cm}
+    
+    \includegraphics[width=0.45\textwidth]{immagini/step3.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{immagini/step4.png}
+\end{center}
+
+\subsubsection{Chosen-Ciphertext Attack (CCA)}
+
+Il \textbf{Chosen-Ciphertext Attack} è un modello di attacco crittografico in cui l'attaccante assume un ruolo attivo nel sistema. A differenza dell'attacco \emph{Chosen-Plaintext} (CPA), qui l'avversario ha la capacità di modificare i ciphertext e di osservare il comportamento del sistema in risposta a tali modifiche.
+
+\paragraph{Modello dell'attacco}
+\begin{itemize}
+    \item L'attaccante intercetta un ciphertext $y = E_k(x)$.
+    \item Modifica il ciphertext, ottenendo una versione alterata $y'$.
+    \item Invia $y'$ al ricevente.
+    \item Il ricevente decripta $y'$ e restituisce:
+    \begin{itemize}
+        \item il plaintext $x'$ (in attacchi diretti),
+        \item oppure informazioni indirette su $x'$ (ad es. errori, timing, eccezioni).
+    \end{itemize}
+    \item L'attaccante usa le informazioni ottenute per ricavare il plaintext originale $x$ o sue proprietà.
+\end{itemize}
+
+\paragraph{Relazione con la malleabilità}
+\begin{itemize}
+    \item Un cifrario è \textbf{malleabile} se l'attaccante può modificare il ciphertext in modo da ottenere una modifica controllata nel plaintext.
+    \item Esempio: se $y = E_k(x)$, un attaccante può costruire $y' = f(y)$ tale che $D_k(y') = f'(x)$.
+    \item La sicurezza contro CCA implica la \textbf{non malleabilità}, ovvero che è computazionalmente inammissibile derivare un plaintext valido da un ciphertext modificato.
+\end{itemize}
+
+\paragraph{CCA-Security}
+\begin{itemize}
+    \item Le CCA rappresentano una minaccia concreta e significativa nei sistemi reali, soprattutto nei contesti in cui:
+    \begin{itemize}
+        \item è possibile interagire con un \emph{padding oracle},
+        \item il sistema risponde con messaggi di errore dettagliati o codici di stato.
+    \end{itemize}
+    \item Di conseguenza, le moderne primitive di cifratura (es. AES-GCM, RSA-OAEP, ecc.) sono progettate per garantire la \textbf{resistenza a CCA}.
+    \item La nozione di CCA-security è oggi uno standard per i cifrari usati in ambienti sensibili.
+\end{itemize}
+
+\newpage
+
+\chapter{Crittografia a Chiave Pubblica}
+\section{Introduzione}
+
+La crittografia a chiave pubblica \`e una componente fondamentale della sicurezza informatica moderna. Si basa sull'uso di una coppia di chiavi: una chiave \textbf{pubblica}, condivisibile con chiunque, e una chiave \textbf{privata}, mantenuta segreta dal proprietario. Il principio chiave \`e che un messaggio cifrato con la chiave pubblica pu\`o essere decifrato solo con la corrispondente chiave privata. Questo meccanismo consente comunicazioni sicure anche su canali non protetti.
+
+\subsection{Modello di Comunicazione}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./immagini/modello_comunicazione.png}
+    \caption{Modello di comunicazione tra Alice e Bob (pagina 3).}
+    \label{fig:comm_model}
+\end{figure}
+
+Nel modello illustrato, Alice vuole inviare un messaggio segreto a Bob:
+\begin{itemize}
+  \item Alice conosce la chiave pubblica di Bob ($\text{PK}_{\text{Bob}}$)
+  \item Bob mantiene segreta la propria chiave privata ($\text{SK}_{\text{Bob}}$)
+  \item Alice cifra il messaggio $x$ come $y = E(\text{PK}_{\text{Bob}}, x)$
+  \item Bob decifra: $x = D(\text{SK}_{\text{Bob}}, y)$
+\end{itemize}
+
+\subsection{Definizione Formale}
+
+Un sistema di crittografia a chiave pubblica \`e una tripla di algoritmi $(G, E, D)$ tale che:
+\begin{itemize}
+  \item $G$ \`e un algoritmo probabilistico che genera la coppia di chiavi $(pk, sk)$
+  \item $E(pk, x)$ \`e un algoritmo (probabilistico) di cifratura: $E: M \rightarrow C$
+  \item $D(sk, y)$ \`e un algoritmo deterministico di decifratura: $D: C \rightarrow M$
+\end{itemize}
+
+Il sistema soddisfa la \textbf{propriet\`a di consistenza}:
+\begin{equation}
+\forall (pk, sk), \forall x \in M: \quad D(sk, E(pk, x)) = x
+\end{equation}
+
+\subsection{Sicurezza (Informale)}
+
+La sicurezza di un sistema di cifratura a chiave pubblica richiede che:
+\begin{itemize}
+  \item Sia computazionalmente infattibile risalire a $x \in M$ a partire da $y = E(pk, x) \in C$ e da $pk \in K$
+  \item Sia computazionalmente difficile risalire alla chiave privata $sk \in K$ conoscendo solo $pk \in K$
+\end{itemize}
+
+La sicurezza si basa su problemi computazionalmente difficili, come la fattorizzazione di grandi numeri interi e il logaritmo discreto.
+
+\subsection{Cifratura Non Randomizzata}
+
+Una crittografia deterministica non \`e perfetta. Un attaccante potrebbe intercettare un cifrato $y$, indovinare un messaggio $x'$ con probabilit\`a non nulla a priori, calcolare $y' = E(pk, x')$ e confrontarlo con $y$. Se $y = y'$, l'attaccante ha confermato l'ipotesi con certezza.
+
+\subsection{Protocollo Base e Digital Envelope}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/protocollo_pke.png}
+    \caption{Protocollo di crittografia a chiave pubblica (pagina 7).}
+    \label{fig:base_protocol}
+\end{figure}
+
+Il protocollo base consiste in:
+\begin{itemize}
+  \item Alice ottiene la chiave pubblica di Bob
+  \item Cifra il messaggio con la chiave pubblica di Bob
+  \item Bob lo decifra con la propria chiave privata
+\end{itemize}
+
+Tuttavia, la cifratura a chiave pubblica \`e molto pi\`u lenta rispetto a quella simmetrica. Perci\`o si ricorre a una \textbf{digital envelope}:
+\begin{itemize}
+  \item Si cifra il messaggio con una chiave simmetrica
+  \item La chiave simmetrica viene cifrata con la chiave pubblica del destinatario
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/ibrido.png}
+    \caption{Protocollo ibrido: cifratura con AES e trasporto chiave con PKE (pagina 9).}
+    \label{fig:hybrid_protocol}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/transporto_protocollo.png}
+    \caption{Trasporto di chiavi: protocollo base con AES e PKE (pagina 10).}
+    \label{fig:key_transport}
+\end{figure}
+
+Un protocollo semplice di trasporto chiave prevede:
+\begin{itemize}
+  \item Alice genera una coppia $(\text{pubk}_A, \text{privk}_A)$
+  \item Bob sceglie una chiave di sessione casuale $k \in \{0,1\}^{128}$
+  \item Bob invia $y = E(\text{pubk}_A, k)$ ad Alice
+  \item Alice decifra: $k = D(\text{privk}_A, y)$ e usa $k$ per cifrare i dati con AES
+\end{itemize}
+
+Nota importante: questo \`e un protocollo \textbf{toy}, cio\`e semplificato, utile solo a fini didattici e non adatto per ambienti reali senza ulteriori misure di sicurezza.
+
+\subsection{Famiglie di Algoritmi a Chiave Pubblica}
+
+\begin{itemize}
+  \item \textbf{Fattorizzazione di interi} $\rightarrow$ RSA
+  \item \textbf{Logaritmo discreto} $\rightarrow$ DHKE, ElGamal, DSA
+  \item \textbf{Curve ellittiche} $\rightarrow$ ECDH, ECDSA (generalizzazione del logaritmo discreto)
+\end{itemize}
+
+\subsection{Lunghezza delle Chiavi e Livelli di Sicurezza}
+
+Un algoritmo ha livello di sicurezza $n$ se richiede $2^n$ operazioni per essere violato. La lunghezza della chiave simmetrica \`e pari al livello di sicurezza, ma in crittografia asimmetrica la lunghezza \`e molto maggiore.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcccc}
+        \textbf{Algoritmo} & 80-bit & 128-bit & 192-bit & 256-bit \\
+        RSA & 1024 & 3072 & 7680 & 15360 \\
+        DH/DSA/ElGamal & 1024 & 3072 & 7680 & 15360 \\
+        ECC & 160 & 256 & 384 & 512 \\
+    \end{tabular}
+    \caption{Relazione tra sicurezza e lunghezza chiave (pagina 17).}
+    \label{tab:key_lengths}
+\end{table}
+
+\subsection{Attacchi su Spazi di Messaggio Ristretti}
+
+Quando lo spazio dei messaggi possibili è ristretto o facilmente enumerabile, come nel caso di un'offerta (bid) rappresentata da un numero intero all'interno di un intervallo noto, un attaccante può eseguire un attacco esaustivo. Questo tipo di attacco sfrutta il fatto che la cifratura a chiave pubblica non è, di per sé, protetta contro la verifica diretta dei risultati di cifratura.
+
+\paragraph{L'attacco.} Supponiamo che un attaccante intercetti un cifrato $y$ inviato a un ricevente tramite un canale insicuro. L'attacco procede come segue:
+
+\begin{enumerate}
+  \item Intercettare il cifrato $y$.
+  \item Provare tutte le possibili istanze di messaggio $x_i$ fino a trovare $x^*$ tale che:
+  \begin{equation}
+  E_{\\text{pubK}}(x^*) = y
+  \end{equation}
+  \item Concludere che $x^* = x$, ovvero che il messaggio cifrato era effettivamente $x$.
+  \item Calcolare un nuovo valore $x' = x^* + 1$.
+  \item Cifrare $x'$ per ottenere $y' = E_{\\text{pubK}}(x')$ e inviarlo al ricevente, ad esempio per alterare l'offerta originale in un'asta elettronica.
+\end{enumerate}
+
+\paragraph{Complessità dell'attacco.} La difficoltà computazionale dell'attacco dipende dalla dimensione dello spazio dei messaggi:
+
+\begin{itemize}
+  \item Se $x$ è un intero arbitrario rappresentabile su 32 bit, allora il numero massimo di tentativi è:
+  \begin{equation}
+  2^{32}
+  \end{equation}
+  che è fattibile con risorse moderne.
+  
+  \item Se si conosce che $x \in [x_{min}, x_{max}]$, e l'intervallo è significativamente più piccolo di $2^{32}$, allora il numero di tentativi richiesti è molto inferiore:
+  \begin{equation}
+  \text{tentativi} \ll 2^{32}
+  \end{equation}
+  rendendo l'attacco ancora più praticabile.
+\end{itemize}
+
+\paragraph{Osservazione.} Questo tipo di vulnerabilità evidenzia l'importanza della randomizzazione nella cifratura a chiave pubblica (es. tramite padding o salting), poiché un sistema deterministico non protegge adeguatamente lo spazio dei messaggi se è troppo prevedibile o limitato.
+
+
+
+In caso di messaggi brevi o facilmente predicibili, un attaccante potrebbe provare tutti i possibili valori fino a trovare quello corretto. Una difesa consiste nell'uso di un \textbf{salt} casuale:
+
+\begin{equation}
+\text{bid} \leftarrow (s, x), \quad s \leftarrow \text{random()}|r\text{-bit}
+\end{equation}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/small_plaintex_space.png}
+    \caption{Uso del salt per rafforzare la cifratura su spazi ristretti (pagina 21).}
+    \label{fig:salt}
+\end{figure}
+
+\subsection{Autenticazione delle Chiavi e Attacchi MiM}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/mimprotocoll.png}
+    \caption{Attacco Man-in-the-Middle su protocollo senza autenticazione (pagina 24-25).}
+    \label{fig:mim_attack}
+\end{figure}
+
+Un attaccante che si interpone tra due parti (MiM) pu\`o sostituire le chiavi pubbliche con le proprie, decifrare i messaggi e ri-cifrarli verso il destinatario. Questo \`e possibile se non c'\`e autenticazione delle chiavi.
+
+\subsection{Contromisura: Certificati Digitali}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{immagini/protcolmim2.png}
+    \caption{Un archivio fidato non \`e sufficiente: servono certificati digitali (pagina 27).}
+    \label{fig:certificates}
+\end{figure}
+
+I certificati digitali, emessi da un'autor\`it\`a fidata, legano un'identit\`a a una chiave pubblica, prevenendo efficacemente gli attacchi MiM.
+
+\section{Il Crittosistema RSA}
+
+Il crittosistema RSA \`e uno degli algoritmi di crittografia asimmetrica pi\`u utilizzati. Introdotto nel 1978 da Ron Rivest, Adi Shamir e Leonard Adleman, rappresenta la base della sicurezza di numerosi protocolli e applicazioni digitali moderne. La sua sicurezza si basa sulla difficolt\`a computazionale del problema della fattorizzazione di grandi numeri interi.
+
+\subsection{RSA in breve}
+\begin{itemize}
+  \item RSA \`e un sistema di crittografia a chiave pubblica.
+  \item Il funzionamento si basa su una funzione unidirezionale: la moltiplicazione \`e facile, la fattorizzazione \`e difficile.
+  \item Viene utilizzato per:
+  \begin{itemize}
+    \item Crittografia (tipicamente per cifrare chiavi simmetriche).
+    \item Firme digitali.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Impostazione Matematica e Aritmetica Modulata}
+RSA opera nell'anello degli interi modulo $n$, cio\`e $Z_{n} = \{0, 1, \ldots, n-1\}$. Il calcolo modulare \`e centrale per tutte le operazioni del crittosistema.
+
+\begin{description}
+  \item[\textbf{Modulo}] $n = p \cdot q$, dove $p$ e $q$ sono primi distinti.
+  \item[\textbf{Messaggi}] Devono appartenere all'intervallo $[0, n-1]$.
+\end{description}
+
+\subsection{Generazione delle Chiavi RSA}
+\begin{enumerate}
+  \item Scegliere due numeri primi distinti: $p$ e $q$.
+  \item Calcolare il modulo: $n = p \cdot q$.
+  \item Calcolare la funzione di Eulero: $\varphi(n) = (p - 1)(q - 1)$.
+  \item Scegliere l'esponente pubblico $e$ tale che:
+  \begin{equation}
+  1 < e < \varphi(n) \quad \text{e} \quad \gcd(e, \varphi(n)) = 1
+  \end{equation}
+  \item Calcolare l'esponente privato $d$ come l'inverso moltiplicativo di $e$ modulo $\varphi(n)$:
+  \begin{equation}
+  d \cdot e \equiv 1 \mod \varphi(n)
+  \end{equation}
+\end{enumerate}
+
+\textbf{Chiavi finali:} 
+\begin{itemize}
+  \item Pubblica: $(e, n)$
+  \item Privata: $(d, n)$
+\end{itemize}
+
+\subsection{Cifratura e Decifratura}
+\begin{description}
+  \item[\textbf{Cifratura}] Dato un messaggio $x \in Z_{n}$:
+  \begin{equation}
+  y = x^e \mod n
+  \end{equation}
+  \item[\textbf{Decifratura}] Dato un cifrato $y \in Z_{n}$:
+  \begin{equation}
+  x = y^d \mod n
+  \end{equation}
+\end{description}
+
+\subsection{\textit{Esempio} con Numeri Artificialmente Piccoli (pagina 10)}
+
+\textbf{Dettagli dell'esempio:}
+\begin{itemize}
+  \item $p = 47$, $q = 71$, quindi $n = 3337$, $\varphi(n) = 3220$
+  \item $e = 79$, si trova $d = 1019$ tale che $79 \cdot 1019 \equiv 1 \mod 3220$
+  \item Messaggio $m = 9666683$ diviso in blocchi $< n$: $m_1 = 966$, $m_2 = 668$, $m_3 = 3$
+  \item Cifratura:
+  \begin{align*}
+  c_1 &= 966^{79} \mod 3337 = 2276 \\
+  c_2 &= 668^{79} \mod 3337 = 2423 \\
+  c_3 &= 3^{79} \mod 3337 = 158
+  \end{align*}
+  \item Decifratura:
+  \begin{align*}
+  m_1 &= 2276^{1019} \mod 3337 = 966 \\
+  m_2 &= 2423^{1019} \mod 3337 = 668 \\
+  m_3 &= 158^{1019} \mod 3337 = 3
+  \end{align*}
+\end{itemize}
+
+\subsection{Dimostrazione della Correttezza di RSA (pagine 11--16)}
+Per dimostrare che la decifratura \`e effettivamente l'inversa della cifratura, occorre dimostrare che:
+\begin{equation}
+D_{privK}(E_{pubK}(x)) = x \mod n
+\end{equation}
+
+\paragraph{Preliminari:}
+\begin{itemize}
+  \item Funzione di Eulero $\varphi(n)$ conta gli interi coprimi con $n$.
+  \item Teorema di Fermat: $a^p \equiv a \mod p$ se $p$ \`e primo.
+  \item Teorema di Eulero: $a^{\varphi(n)} \equiv 1 \mod n$ se $\gcd(a, n) = 1$
+\end{itemize}
+
+\paragraph{Caso 1: $\gcd(x, n) = 1$}
+\begin{align*}
+x^{ed} &\equiv x^{1 + t \varphi(n)} \mod n \\
+       &\equiv x (x^{\varphi(n)})^t \mod n \\
+       &\equiv x \cdot 1^t = x \mod n
+\end{align*}
+
+\paragraph{Caso 2: $\gcd(x, n) \neq 1$}
+Dato che $n = pq$, allora $\gcd(x, n) \neq 1$ implica che $x$ \`e multiplo di $p$ o $q$, ma non di entrambi. Grazie alla struttura di $n$, si dimostra che anche in questo caso:
+\begin{equation}
+x^{ed} \equiv x \mod n
+\end{equation}
+tramite una variante del teorema di Eulero applicato modulo $q$.
+
+\textbf{Conclusione:} la cifratura e la decifratura sono effettivamente operazioni inverse.
+
+\subsection{Considerazioni sulla Sicurezza di RSA}
+\begin{itemize}
+  \item La dimostrazione di sicurezza si basa su ipotesi non ancora dimostrate, come l'equivalenza computazionale tra la fattorizzazione e il calcolo della chiave privata $d$.
+  \item Attacchi:
+  \begin{itemize}
+    \item Protocol-based (malleabilit\`a, padding)
+    \item Side-channel (misure fisiche come tempo, potenza)
+    \item Matematici (fattorizzazione, root modulari)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Fatti importanti (pagine 24--26):}
+\begin{itemize}
+  \item Se si conosce $\varphi(n)$, si pu\`o calcolare $d$ facilmente.
+  \item Se si conosce $d$, \`e possibile risalire a $\varphi(n)$, e quindi a $p$ e $q$.
+  \item Calcolare la radice $e$-esima $x = \sqrt[e]{y} \mod n$ \`e difficile se $n$ \`e composto, ma facile se \`e primo.
+\end{itemize}
+
+\subsection{Complessit\`a della Fattorizzazione e Algoritmi (pagine 27--30)}
+\begin{itemize}
+  \item Non esiste algoritmo polinomiale noto per la fattorizzazione.
+  \item Gli algoritmi pi\`u avanzati (come GNFS) sono sub-esponenziali.
+  \item Shor (1994) ha mostrato un algoritmo quantistico per la fattorizzazione in tempo polinomiale.
+\end{itemize}
+
+\subsection{Scelta della Lunghezza del Modulo (pagina 31)}
+\begin{itemize}
+  \item Moduli da 1024 bit oggi sono considerati vulnerabili.
+  \item Si raccomandano moduli da almeno 2048 o 3072 bit per una sicurezza a lungo termine.
+  \item La sicurezza futura dipender\`a anche dall'evoluzione del calcolo quantistico.
+\end{itemize}
 
   \end{document}
